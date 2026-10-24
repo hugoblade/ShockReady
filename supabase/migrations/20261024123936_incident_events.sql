@@ -1,7 +1,7 @@
 
 create table public.incident_events (
   id uuid primary key default gen_random_uuid(),
-  incident_id uuid not null references public.incidents (id) on delete cascade,
+  incident_id uuid not null references public.incidents (id),
   old_status public.incident_status,
   new_status public.incident_status not null,
   changed_by uuid references public.profiles (id) on delete set null,
