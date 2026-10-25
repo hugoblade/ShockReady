@@ -1,8 +1,8 @@
+import IncidentDashboard from './IncidentDashboard.jsx'
 import './App.css'
 import { useState } from 'react'
 import Auth from './Auth.jsx'
 import IncidentReport from './IncidentReport.jsx'
-
 const steps = [
   {
     number: '01',
@@ -33,6 +33,14 @@ const steps = [
 function App() {
   const [showAuth, setShowAuth] = useState(false)
 const [showIncidentReport, setShowIncidentReport] = useState(false)
+const [showDashboard, setShowDashboard] = useState(false)
+if (showDashboard) {
+  return <IncidentDashboard onBack={() => setShowDashboard(false)} />
+}
+
+if (showDashboard) {
+  return <IncidentDashboard onBack={() => setShowDashboard(false)} />
+}
 
 if (showIncidentReport) {
   return (
@@ -61,6 +69,8 @@ if (showAuth) {
         </nav>
 
         <div className="nav-actions">
+          <button className="sign-in" type="button" onClick={() => setShowDashboard(true)}>Dashboard</button>
+          <button className="sign-in" type="button" onClick={() => setShowDashboard(true)}>Dashboard</button>
           <a
   className="sign-in"
   href="#sign-in"
@@ -254,3 +264,5 @@ if (showAuth) {
 }
 
 export default App
+
+
