@@ -1,11 +1,12 @@
 import IncidentDashboard from './IncidentDashboard.jsx'
 import './App.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Auth from './Auth.jsx'
 import IncidentReport from './IncidentReport.jsx'
 import ResourceTracking from './ResourceTracking.jsx'
 import CommunityCorps from './CommunityCorps.jsx'
 import EmergencyDashboard from './EmergencyDashboard.jsx'
+
 const steps = [
   {
     number: '01',
@@ -35,45 +36,42 @@ const steps = [
 
 function App() {
   const [showAuth, setShowAuth] = useState(false)
-const [showIncidentReport, setShowIncidentReport] = useState(false)
-const [showDashboard, setShowDashboard] = useState(false)
-const [showResourceTracking, setShowResourceTracking] = useState(false)
-const [showCommunityCorps, setShowCommunityCorps] = useState(false)
-const [showEmergencyDashboard, setShowEmergencyDashboard] = useState(false)
-if (showDashboard) {
-  return <IncidentDashboard onBack={() => setShowDashboard(false)} />
-}
+  const [showIncidentReport, setShowIncidentReport] = useState(false)
+  const [showDashboard, setShowDashboard] = useState(false)
+  const [showResourceTracking, setShowResourceTracking] = useState(false)
+  const [showCommunityCorps, setShowCommunityCorps] = useState(false)
+  const [showEmergencyDashboard, setShowEmergencyDashboard] = useState(false)
 
-if (showResourceTracking) {
-  return <ResourceTracking />
-}
+  // THEME STATE
+  const [theme, setTheme] = useState('light')
 
-if (showCommunityCorps) {
-  return <CommunityCorps />
-}
+  // APPLY THEME
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+  }, [theme])
 
-if (showEmergencyDashboard) {
-  return <EmergencyDashboard onBack={() => setShowEmergencyDashboard(false)} />
-}
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light')
+  }
 
-if (showIncidentReport) {
-  return (
-    <IncidentReport />
-  )
-}
-
-if (showAuth) {
-  return <Auth onBack={() => setShowAuth(false)} />
-}
+  // ROUTING LOGIC
+  if (showDashboard) return <IncidentDashboard onBack={() => setShowDashboard(false)} />
+  if (showResourceTracking) return <ResourceTracking onBack={() => setShowResourceTracking(false)} />
+  if (showCommunityCorps) return <CommunityCorps onBack={() => setShowCommunityCorps(false)} />
+  if (showEmergencyDashboard) return <EmergencyDashboard onBack={() => setShowEmergencyDashboard(false)} />
+  if (showIncidentReport) return <IncidentReport onBack={() => setShowIncidentReport(false)} />
+  if (showAuth) return <Auth onBack={() => setShowAuth(false)} />
 
   return (
     <main className="site-shell">
       <header className="navbar">
+        {/* 👇 TOP NAVBAR LOGO GOES HERE 👇 */}
         <a className="brand" href="#home" aria-label="ShockReady home">
-          <span className="brand-mark" aria-hidden="true">
-            S<span>R</span>
-          </span>
-          <span className="brand-name">Shock<span>Ready</span></span>
+          <img
+            src={theme === 'light' ? '/logo-light.png' : '/logo-dark.png'}
+            alt="ShockReady Logo"
+            style={{ height: '45px', width: 'auto', objectFit: 'contain' }}
+          />
         </a>
 
         <nav className="nav-links" aria-label="Main navigation">
@@ -83,30 +81,50 @@ if (showAuth) {
         </nav>
 
         <div className="nav-actions">
+          {/* THEME TOGGLE BUTTON */}
+          <button
+            onClick={toggleTheme}
+            className="sign-in"
+            style={{
+              background: 'transparent',
+              border: '1px solid var(--accent-sage)',
+              color: 'var(--text-main)',
+              padding: '6px 12px',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+          >
+            {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
+          </button>
+
+          {/* NEW PAGE ROUTES */}
           <button className="sign-in" type="button" onClick={() => setShowDashboard(true)}>Dashboard</button>
-          <button className="sign-in" type="button" onClick={() => setShowResourceTracking(true)}>Resource Tracking</button>
-          <button className="sign-in" type="button" onClick={() => setShowCommunityCorps(true)}>Community Resilience Corps</button>
-          <button className="sign-in" type="button" onClick={() => setShowEmergencyDashboard(true)}>Emergency Response Dashboard</button>
+          <button className="sign-in" type="button" onClick={() => setShowResourceTracking(true)}>Resources</button>
+          <button className="sign-in" type="button" onClick={() => setShowCommunityCorps(true)}>Corps</button>
+          <button className="sign-in" type="button" onClick={() => setShowEmergencyDashboard(true)}>Emergency</button>
+
           <a
-  className="sign-in"
-  href="#sign-in"
-  onClick={(event) => {
-    event.preventDefault()
-    setShowAuth(true)
-  }}
->
-  Sign in
-</a>
+            className="sign-in"
+            href="#sign-in"
+            onClick={(event) => {
+              event.preventDefault()
+              setShowAuth(true)
+            }}
+          >
+            Sign in
+          </a>
+
           <a
-  className="button button-small"
-  href="#get-started"
-  onClick={(event) => {
-    event.preventDefault()
-    setShowAuth(true)
-  }}
->
-  Get started <span aria-hidden="true">↗</span>
-</a>
+            className="button button-small"
+            href="#get-started"
+            onClick={(event) => {
+              event.preventDefault()
+              setShowAuth(true)
+            }}
+          >
+            Get started <span aria-hidden="true">↗</span>
+          </a>
         </div>
       </header>
 
@@ -135,22 +153,24 @@ if (showAuth) {
           </p>
 
           <div className="hero-actions">
-    <a
-  className="button"
-  href="#get-started"
-  onClick={(event) => {
-    event.preventDefault()
-    setShowAuth(true)
-  }}
-  >Get Started</a>
+            <a
+              className="button"
+              href="#get-started"
+              onClick={(event) => {
+                event.preventDefault()
+                setShowAuth(true)
+              }}
+            >
+              Get Started
+            </a>
 
-  <button
-  className="button"
-  type="button"
-  onClick={() => setShowIncidentReport(true)}
->
-  Raise your voice <span aria-hidden="true">→</span>
-</button>
+            <button
+              className="button"
+              type="button"
+              onClick={() => setShowIncidentReport(true)}
+            >
+              Raise your voice <span aria-hidden="true">→</span>
+            </button>
 
             <a className="text-link" href="#how-it-works">
               Discover how it works <span aria-hidden="true">↗</span>
@@ -171,15 +191,9 @@ if (showAuth) {
           <div className="hill hill-middle" />
           <div className="hill hill-front" />
 
-          <div className="tree tree-one">
-            <span />
-          </div>
-          <div className="tree tree-two">
-            <span />
-          </div>
-          <div className="tree tree-three">
-            <span />
-          </div>
+          <div className="tree tree-one"><span /></div>
+          <div className="tree tree-two"><span /></div>
+          <div className="tree tree-three"><span /></div>
 
           <div className="visual-caption">
             <span className="caption-symbol">↗</span>
@@ -268,9 +282,13 @@ if (showAuth) {
       </section>
 
       <footer className="footer">
+        {/* 👇 FOOTER LOGO GOES HERE 👇 */}
         <a className="brand footer-brand" href="#home">
-          <span className="brand-mark" aria-hidden="true">S<span>R</span></span>
-          <span className="brand-name">Shock<span>Ready</span></span>
+          <img
+            src={theme === 'light' ? '/logo-light.png' : '/logo-dark.png'}
+            alt="ShockReady Logo"
+            style={{ height: '35px', width: 'auto', objectFit: 'contain' }}
+          />
         </a>
         <p>Turning Community Voices into Climate Action.</p>
         <span>Community resilience starts with us.</span>
@@ -280,9 +298,3 @@ if (showAuth) {
 }
 
 export default App
-
-
-
-
-
-

@@ -1,6 +1,17 @@
 :root {
-  color: #10253b;
-  background: #f4f3ed;
+  /* LIGHT MODE (Exact Logo Specs) */
+  --bg-main: #F2F7FA;          /* Mist */
+  --text-main: #0B2545;        /* Cloud Outline / "SHOCK" Navy */
+  --text-muted: #5B6B7B;       /* Muted Gray */
+  
+  --accent-sage: #0B7A6E;      /* Circuit nodes / "READY" Teal */
+  --accent-teal: #0B7A6E;      /* Alias */
+  --accent-amber: #F59E0B;     /* Bolt Amber */
+  
+  --card-bg: #FFFFFF;
+  --navbar-bg: #FFFFFF;
+  --border-color: #D1E0E8;     /* Soft border to match Mist */
+  
   font-family: Inter, "Segoe UI", Arial, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -8,21 +19,31 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
+[data-theme="dark"] {
+  /* DARK MODE (Exact Logo Specs) */
+  --bg-main: #0B1620;          /* Night */
+  --text-main: #E8F0F6;        /* Main text */
+  --text-muted: #8C9EAD;       /* Soft readable gray for dark mode */
+  
+  --accent-sage: #2DD4BF;      /* Teal Glow */
+  --accent-teal: #2DD4BF;
+  --accent-amber: #FBBF24;     /* Bolt Amber */
+  
+  --card-bg: #14253A;
+  --navbar-bg: #0B1620;
+  --border-color: #1E3A5F;
 }
 
-html {
-  min-width: 320px;
-  scroll-behavior: smooth;
-}
+* { box-sizing: border-box; }
+html { min-width: 320px; scroll-behavior: smooth; }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  transition: background-color 0.3s, color 0.3s;
 }
 
-#root {
-  min-height: 100vh;
-}
+#root { min-height: 100vh; }
