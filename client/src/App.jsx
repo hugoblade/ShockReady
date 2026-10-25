@@ -3,6 +3,9 @@ import './App.css'
 import { useState } from 'react'
 import Auth from './Auth.jsx'
 import IncidentReport from './IncidentReport.jsx'
+import ResourceTracking from './ResourceTracking.jsx'
+import CommunityCorps from './CommunityCorps.jsx'
+import EmergencyDashboard from './EmergencyDashboard.jsx'
 const steps = [
   {
     number: '01',
@@ -34,12 +37,23 @@ function App() {
   const [showAuth, setShowAuth] = useState(false)
 const [showIncidentReport, setShowIncidentReport] = useState(false)
 const [showDashboard, setShowDashboard] = useState(false)
+const [showResourceTracking, setShowResourceTracking] = useState(false)
+const [showCommunityCorps, setShowCommunityCorps] = useState(false)
+const [showEmergencyDashboard, setShowEmergencyDashboard] = useState(false)
 if (showDashboard) {
   return <IncidentDashboard onBack={() => setShowDashboard(false)} />
 }
 
-if (showDashboard) {
-  return <IncidentDashboard onBack={() => setShowDashboard(false)} />
+if (showResourceTracking) {
+  return <ResourceTracking />
+}
+
+if (showCommunityCorps) {
+  return <CommunityCorps />
+}
+
+if (showEmergencyDashboard) {
+  return <EmergencyDashboard onBack={() => setShowEmergencyDashboard(false)} />
 }
 
 if (showIncidentReport) {
@@ -70,7 +84,9 @@ if (showAuth) {
 
         <div className="nav-actions">
           <button className="sign-in" type="button" onClick={() => setShowDashboard(true)}>Dashboard</button>
-          <button className="sign-in" type="button" onClick={() => setShowDashboard(true)}>Dashboard</button>
+          <button className="sign-in" type="button" onClick={() => setShowResourceTracking(true)}>Resource Tracking</button>
+          <button className="sign-in" type="button" onClick={() => setShowCommunityCorps(true)}>Community Resilience Corps</button>
+          <button className="sign-in" type="button" onClick={() => setShowEmergencyDashboard(true)}>Emergency Response Dashboard</button>
           <a
   className="sign-in"
   href="#sign-in"
@@ -264,5 +280,9 @@ if (showAuth) {
 }
 
 export default App
+
+
+
+
 
 
