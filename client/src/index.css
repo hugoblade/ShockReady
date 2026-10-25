@@ -1,11 +1,21 @@
 :root {
-  color: #10253b;
-  background: #f4f3ed;
-  font-family: Inter, "Segoe UI", Arial, sans-serif;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --bg-main: #f4f3ed;         /* Teammate's warm ivory */
+  --text-main: #10253b;       /* Teammate's navy blue */
+  --text-muted: #536273;      
+  --card-bg: #FFFFFF;
+  
+  --accent-sage: #648b65;     /* Teammate's sage green */
+  --border-color: #e1e2d9;
+}
+
+[data-theme="dark"] {
+  --bg-main: #0B1620;         /* Your logo's deep navy */
+  --text-main: #F8FAFC;       /* White */
+  --text-muted: #94A3B8;      
+  --card-bg: #14253A;         /* Lighter navy for cards */
+  
+  --accent-sage: #2DD4BF;     /* Your logo's vibrant teal */
+  --border-color: #1E3A5F;
 }
 
 * {
@@ -13,7 +23,6 @@
 }
 
 html {
-  min-width: 320px;
   scroll-behavior: smooth;
 }
 
@@ -21,8 +30,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-}
-
-#root {
-  min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  transition: background-color 0.3s, color 0.3s;
 }

@@ -1,38 +1,4 @@
-:root {
-  font-family: Inter, "Segoe UI", Arial, sans-serif;
-  color: #10253b;
-  background: #f4f3ed;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-optical-sizing: auto;
-  font-weight: 400;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-
+/* --- TEAMMATE'S ORIGINAL STYLES --- */
 .site-shell {
   width: 100%;
   max-width: 1600px;
@@ -58,52 +24,20 @@ a {
   flex-shrink: 0;
 }
 
-.brand-mark {
-  width: 39px;
-  height: 39px;
-  display: grid;
-  place-items: center;
-  position: relative;
-  border-radius: 12px;
-  background: #10253b;
-  color: #f4f3ed;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -3px;
-  padding-right: 3px;
-}
-
-.brand-mark span {
-  color: #a6d5a0;
-}
-
-.brand-name {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -1px;
-}
-
-.brand-name span {
-  color: #648b65;
-}
-
-.nav-links,
-.nav-actions {
+.nav-links, .nav-actions {
   display: flex;
   align-items: center;
   gap: 30px;
 }
 
-.nav-links a,
-.sign-in {
+.nav-links a, .sign-in {
   color: #536273;
   font-size: 13px;
   font-weight: 600;
   transition: color 180ms ease;
 }
 
-.nav-links a:hover,
-.sign-in:hover {
+.nav-links a:hover, .sign-in:hover {
   color: #648b65;
 }
 
@@ -125,6 +59,7 @@ a {
   font-size: 13px;
   font-weight: 700;
   transition: background 180ms ease, transform 180ms ease;
+  cursor: pointer;
 }
 
 .button:hover {
@@ -150,8 +85,7 @@ a {
   padding: 12px 0;
 }
 
-.eyebrow,
-.section-kicker {
+.eyebrow, .section-kicker {
   display: inline-flex;
   align-items: center;
   gap: 9px;
@@ -210,202 +144,6 @@ a {
   font-weight: 700;
 }
 
-.text-link span {
-  margin-left: 5px;
-}
-
-.hero-note {
-  margin-top: 37px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #748071;
-  font-size: 11px;
-}
-
-.note-icon {
-  width: 27px;
-  height: 27px;
-  display: grid;
-  place-items: center;
-  border: 1px solid #d7e0d0;
-  border-radius: 50%;
-  color: #648b65;
-  font-size: 16px;
-}
-
-.hero-visual {
-  min-height: 430px;
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  border-radius: 15px;
-  background: #e3eadc;
-}
-
-.visual-sun {
-  width: 115px;
-  height: 115px;
-  position: absolute;
-  top: 55px;
-  right: 18%;
-  border-radius: 50%;
-  background: #f1d99c;
-}
-
-.visual-cloud {
-  height: 15px;
-  position: absolute;
-  border-radius: 50px;
-  background: rgba(255, 255, 255, 0.76);
-}
-
-.cloud-one {
-  top: 85px;
-  left: 15%;
-  width: 78px;
-}
-
-.cloud-two {
-  top: 120px;
-  right: 12%;
-  width: 52px;
-}
-
-.hill {
-  position: absolute;
-  width: 125%;
-  left: -12%;
-  border-radius: 50% 50% 0 0;
-}
-
-.hill-back {
-  height: 230px;
-  bottom: 75px;
-  background: #b8d0ad;
-  transform: rotate(-9deg);
-}
-
-.hill-middle {
-  height: 245px;
-  bottom: -20px;
-  left: 13%;
-  background: #86ad81;
-  transform: rotate(12deg);
-}
-
-.hill-front {
-  height: 190px;
-  bottom: -80px;
-  left: -20%;
-  background: #547d60;
-  transform: rotate(-9deg);
-}
-
-.tree {
-  position: absolute;
-  z-index: 2;
-  bottom: 92px;
-  width: 9px;
-  height: 75px;
-  border-radius: 5px;
-  background: #745f47;
-}
-
-.tree::before,
-.tree::after,
-.tree span {
-  content: "";
-  width: 43px;
-  height: 49px;
-  position: absolute;
-  left: -17px;
-  top: -23px;
-  border-radius: 50% 50% 45% 45%;
-  background: #527b5b;
-}
-
-.tree::after {
-  width: 34px;
-  height: 38px;
-  top: -42px;
-  left: -12px;
-  background: #6c986b;
-}
-
-.tree span {
-  width: 30px;
-  height: 34px;
-  top: -10px;
-  left: -11px;
-  background: #3f6d4e;
-}
-
-.tree-one {
-  left: 17%;
-  transform: scale(0.75);
-}
-
-.tree-two {
-  right: 19%;
-  bottom: 72px;
-  transform: scale(1.15);
-}
-
-.tree-three {
-  right: 34%;
-  bottom: 49px;
-  transform: scale(0.58);
-}
-
-.visual-caption {
-  position: absolute;
-  z-index: 4;
-  left: 22px;
-  right: 22px;
-  bottom: 22px;
-  padding: 17px;
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 10px;
-  background: rgba(250, 250, 244, 0.93);
-  box-shadow: 0 10px 30px rgba(16, 37, 59, 0.08);
-}
-
-.caption-symbol {
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 9px;
-  background: #e0ead9;
-  color: #476c4d;
-  font-size: 22px;
-}
-
-.visual-caption strong {
-  font-size: 13px;
-}
-
-.visual-caption p {
-  margin: 5px 0 0;
-  color: #6d786e;
-  font-size: 11px;
-}
-
-.visual-label {
-  position: absolute;
-  top: 22px;
-  left: 22px;
-  color: #49684f;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-}
-
 .impact-strip {
   padding: 34px 7%;
   display: grid;
@@ -415,44 +153,6 @@ a {
   border-top: 1px solid #e1e2d9;
   border-bottom: 1px solid #e1e2d9;
   background: #eeefe7;
-}
-
-.impact-intro h2 {
-  max-width: 250px;
-  margin: 9px 0 0;
-  font-size: 19px;
-  line-height: 1.4;
-  letter-spacing: -0.5px;
-}
-
-.impact-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.impact-icon {
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: #dfe8d9;
-  color: #557e5b;
-  font-size: 22px;
-}
-
-.impact-item h3 {
-  margin: 2px 0 6px;
-  font-size: 12px;
-}
-
-.impact-item p {
-  margin: 0;
-  color: #768072;
-  font-size: 11px;
-  line-height: 1.6;
 }
 
 .process-section {
@@ -465,19 +165,11 @@ a {
   text-align: center;
 }
 
-.section-heading h2,
-.mission-section h2,
-.closing-section h2 {
+.section-heading h2, .mission-section h2, .closing-section h2 {
   margin: 15px 0;
   font-size: clamp(30px, 3.5vw, 44px);
   line-height: 1.15;
   letter-spacing: -1.8px;
-}
-
-.section-heading > p {
-  color: #697584;
-  font-size: 14px;
-  line-height: 1.8;
 }
 
 .steps-grid {
@@ -496,38 +188,6 @@ a {
   transition: transform 180ms ease, background 180ms ease;
 }
 
-.step-card:hover {
-  transform: translateY(-4px);
-  background: #fff;
-}
-
-.step-number {
-  color: #789574;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1px;
-}
-
-.step-card h3 {
-  margin: 24px 0 10px;
-  font-size: 19px;
-  letter-spacing: -0.5px;
-}
-
-.step-card p {
-  margin: 0;
-  color: #6e7985;
-  font-size: 12px;
-  line-height: 1.8;
-}
-
-.step-arrow {
-  position: absolute;
-  top: 23px;
-  right: 22px;
-  color: #789574;
-}
-
 .mission-section {
   padding: 60px 8%;
   display: grid;
@@ -535,18 +195,6 @@ a {
   align-items: center;
   gap: 8%;
   background: #e8ece2;
-}
-
-.mission-section h2 {
-  max-width: 480px;
-  margin-bottom: 0;
-}
-
-.mission-section > p {
-  margin: 0;
-  color: #596a61;
-  font-size: 14px;
-  line-height: 2;
 }
 
 .closing-section {
@@ -561,38 +209,6 @@ a {
   color: #fff;
 }
 
-.closing-section > div {
-  max-width: 600px;
-}
-
-.closing-section .section-kicker {
-  color: #a6d5a0;
-}
-
-.closing-section h2 {
-  margin: 13px 0;
-  font-size: clamp(27px, 3vw, 38px);
-}
-
-.closing-section p {
-  margin: 0;
-  color: #c3ced5;
-  font-size: 13px;
-  line-height: 1.8;
-}
-
-.button-light {
-  flex-shrink: 0;
-  border-color: #a6d5a0;
-  background: #a6d5a0;
-  color: #10253b;
-}
-
-.button-light:hover {
-  border-color: #c2e4bc;
-  background: #c2e4bc;
-}
-
 .footer {
   padding: 30px 7%;
   display: flex;
@@ -602,274 +218,39 @@ a {
   border-top: 1px solid #e1e2d9;
 }
 
-.footer-brand .brand-mark {
-  width: 32px;
-  height: 32px;
-  font-size: 15px;
-  border-radius: 9px;
-}
 
-.footer-brand .brand-name {
-  font-size: 18px;
-}
+/* ========================================= */
+/* --- DARK MODE OVERRIDES (MUST BE AT BOTTOM) --- */
+/* ========================================= */
 
-.footer > p,
-.footer > span {
-  color: #778078;
-  font-size: 11px;
-}
+.site-shell { background-color: var(--bg-main); }
+.navbar { border-bottom: 1px solid var(--border-color); }
+.nav-links a, .sign-in { color: var(--text-muted); }
+.nav-links a:hover, .sign-in:hover { color: var(--accent-sage); }
 
-@media (min-width: 1400px) {
-  .hero-section {
-    padding-top: 85px;
-    padding-bottom: 90px;
-  }
+.hero-copy h1 { color: var(--text-main); }
+.hero-copy h1 span { color: var(--accent-sage); }
+.eyebrow, .section-kicker { color: var(--accent-sage); }
+.hero-description { color: var(--text-muted); }
+.official-tagline { color: var(--text-main); }
 
-  .hero-visual {
-    min-height: 490px;
-  }
-}
+.button { background: var(--text-main); border-color: var(--text-main); color: var(--bg-main); }
+.button:hover { background: var(--text-muted); }
 
-@media (max-width: 1050px) {
-  .navbar {
-    padding-right: 5%;
-    padding-left: 5%;
-  }
+.impact-strip { background: var(--card-bg); border-color: var(--border-color); }
+.impact-item h3 { color: var(--text-main); }
+.step-card { background: var(--card-bg); border-color: var(--border-color); }
+.step-card:hover { background: var(--bg-main); }
+.step-card p { color: var(--text-muted); }
+.step-card h3 { color: var(--text-main); }
 
-  .hero-section,
-  .impact-strip,
-  .process-section {
-    padding-right: 5%;
-    padding-left: 5%;
-  }
+.mission-section { background: var(--card-bg); }
+.mission-section p { color: var(--text-muted); }
+.mission-section h2 { color: var(--text-main); }
 
-  .hero-copy h1 {
-    letter-spacing: -3px;
-  }
+.closing-section { background: var(--text-main); color: var(--bg-main); }
+.closing-section p { color: var(--text-muted); }
+.button-light { background: var(--accent-sage); border-color: var(--accent-sage); color: #0B1620; }
 
-  .nav-links {
-    gap: 17px;
-  }
-
-  .impact-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: 28px;
-  }
-
-  .impact-intro h2 {
-    max-width: 330px;
-  }
-}
-
-@media (max-width: 760px) {
-  .navbar {
-    min-height: 72px;
-    flex-wrap: wrap;
-    gap: 15px;
-    padding: 15px 6%;
-  }
-
-  .brand-name {
-    font-size: 20px;
-  }
-
-  .nav-links {
-    order: 3;
-    width: 100%;
-    justify-content: space-between;
-    gap: 12px;
-    padding-top: 9px;
-    border-top: 1px solid #e1e2d9;
-  }
-
-  .nav-links a {
-    font-size: 11px;
-  }
-
-  .nav-actions {
-    gap: 14px;
-  }
-
-  .sign-in {
-    font-size: 12px;
-  }
-
-  .button-small {
-    min-height: 37px;
-    padding: 0 12px;
-    font-size: 11px;
-  }
-
-  .hero-section {
-    padding: 46px 6% 45px;
-    grid-template-columns: 1fr;
-    gap: 35px;
-  }
-
-  .hero-copy h1 {
-    font-size: clamp(48px, 11vw, 70px);
-    letter-spacing: -3px;
-  }
-
-  .hero-description {
-    font-size: 14px;
-  }
-
-  .hero-visual {
-    min-height: 360px;
-  }
-
-  .hero-note {
-    line-height: 1.7;
-  }
-
-  .impact-strip {
-    padding: 31px 6%;
-    gap: 25px 16px;
-  }
-
-  .impact-intro h2 {
-    font-size: 17px;
-  }
-
-  .impact-item {
-    gap: 9px;
-  }
-
-  .impact-icon {
-    width: 32px;
-    height: 32px;
-  }
-
-  .impact-item h3 {
-    font-size: 11px;
-  }
-
-  .impact-item p {
-    font-size: 10px;
-  }
-
-  .process-section {
-    padding: 65px 6%;
-  }
-
-  .section-heading {
-    margin-bottom: 30px;
-  }
-
-  .section-heading h2,
-  .mission-section h2 {
-    font-size: 34px;
-    letter-spacing: -1.2px;
-  }
-
-  .steps-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .step-card {
-    min-height: 210px;
-    padding: 20px 16px;
-  }
-
-  .step-card h3 {
-    font-size: 17px;
-  }
-
-  .step-card p {
-    font-size: 11px;
-  }
-
-  .mission-section {
-    padding: 48px 6%;
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .closing-section {
-    margin: 35px 5%;
-    padding: 32px 7%;
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .closing-section h2 {
-    font-size: 31px;
-    letter-spacing: -1px;
-  }
-
-  .footer {
-    padding: 25px 6%;
-    flex-wrap: wrap;
-  }
-
-  .footer > p {
-    order: 3;
-    width: 100%;
-    margin: 0;
-  }
-}
-
-@media (max-width: 400px) {
-  .brand {
-    gap: 7px;
-  }
-
-  .brand-mark {
-    width: 33px;
-    height: 33px;
-    font-size: 16px;
-  }
-
-  .brand-name {
-    font-size: 18px;
-  }
-
-  .nav-actions {
-    gap: 10px;
-  }
-
-  .nav-links a {
-    font-size: 10px;
-  }
-
-  .hero-actions {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  .hero-visual {
-    min-height: 320px;
-  }
-
-  .impact-strip {
-    grid-template-columns: 1fr;
-  }
-
-  .impact-intro h2 {
-    max-width: 100%;
-  }
-
-  .steps-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .step-card {
-    min-height: 175px;
-  }
-
-  .footer > span {
-    width: 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
-}
+.footer { border-color: var(--border-color); }
+.footer p, .footer span { color: var(--text-muted); }
