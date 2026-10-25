@@ -133,3 +133,60 @@
     padding: 25px 20px;
   }
 }
+.incident-location-button {
+  margin: 4px 0 8px;
+  padding: 12px 14px;
+  border: 1px solid #cfe3ca;
+  border-radius: 9px;
+  background: #edf7ec;
+  color: #365344;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.incident-location-button:hover {
+  background: #dcefd8;
+}
+
+.incident-location-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.incident-location-map {
+  width: 100%;
+  height: 320px;
+  margin-top: 4px;
+  overflow: hidden;
+  border: 1px solid #dce2da;
+  border-radius: 12px;
+}
+
+.incident-map {
+  width: 100%;
+  height: 100%;
+}
+
+.incident-location-status {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f5f5f0;
+  color: #68756f;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.incident-location-status.selected {
+  background: #edf7ec;
+  color: #365344;
+}
+
+@media (max-width: 520px) {
+  .incident-location-map {
+    height: 260px;
+  }
+}

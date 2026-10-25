@@ -138,3 +138,20 @@
 @media (max-width: 480px) {
   .auth-card { padding: 26px 21px; }
 }
+.auth-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 14px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #10253B;
+}
+
+.auth-consent input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  flex-shrink: 0;
+  accent-color: #10253B;
+}

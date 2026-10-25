@@ -2,12 +2,12 @@ import { useState } from 'react'
 import { supabase } from './supabase'
 import './Auth.css'
 
-
 export default function Auth({ onBack }) {
   const [mode, setMode] = useState('login')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [consent, setConsent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -20,11 +20,18 @@ export default function Auth({ onBack }) {
 
     try {
       if (mode === 'signup') {
+        if (!consent) {
+          throw new Error('Please provide consent before creating your account.')
+        }
+
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
           options: {
-            data: { full_name: fullName.trim() },
+            data: {
+              full_name: fullName.trim(),
+              consent_given: 'true',
+            },
           },
         })
 
@@ -33,7 +40,9 @@ export default function Auth({ onBack }) {
         if (data.session) {
           setMessage('Account created successfully. You can now continue to ShockReady.')
         } else {
-          setMessage('Account request received. Check your email to confirm your account before signing in.')
+          setMessage(
+            'Account request received. Check your email to confirm your account before signing in.'
+          )
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -50,6 +59,13 @@ export default function Auth({ onBack }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  function changeMode(nextMode) {
+    setMode(nextMode)
+    setConsent(false)
+    setMessage('')
+    setError('')
   }
 
   return (
@@ -73,14 +89,14 @@ export default function Auth({ onBack }) {
           <button
             type="button"
             className={mode === 'login' ? 'active' : ''}
-            onClick={() => { setMode('login'); setMessage(''); setError('') }}
+            onClick={() => changeMode('login')}
           >
             Sign in
           </button>
           <button
             type="button"
             className={mode === 'signup' ? 'active' : ''}
-            onClick={() => { setMode('signup'); setMessage(''); setError('') }}
+            onClick={() => changeMode('signup')}
           >
             Create account
           </button>
@@ -88,17 +104,33 @@ export default function Auth({ onBack }) {
 
         <form onSubmit={handleSubmit}>
           {mode === 'signup' && (
-            <label>
-              Full name
-              <input
-                type="text"
-                autoComplete="name"
-                value={fullName}
-                onChange={(event) => setFullName(event.target.value)}
-                placeholder="Enter your full name"
-                required
-              />
-            </label>
+            <>
+              <label>
+                Full name
+                <input
+                  type="text"
+                  autoComplete="name"
+                  value={fullName}
+                  onChange={(event) => setFullName(event.target.value)}
+                  placeholder="Enter your full name"
+                  required
+                />
+              </label>
+
+              <label className="auth-consent">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(event) => setConsent(event.target.checked)}
+                  required
+                />
+                <span>
+                  I consent to ShockReady collecting and using the information
+                  I submit to support incident reporting and community climate
+                  response.
+                </span>
+              </label>
+            </>
           )}
 
           <label>
