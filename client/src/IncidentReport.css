@@ -1,0 +1,135 @@
+.incident-page {
+  min-height: 100vh;
+  padding: 28px 20px 48px;
+  background: #f4f3ed;
+  color: #10253b;
+  font-family: inherit;
+}
+
+.incident-back {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: #365344;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.incident-card {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 36px;
+  background: #fff;
+  border: 1px solid #e3e7df;
+  border-radius: 22px;
+  box-shadow: 0 18px 55px rgb(16 37 59 / 7%);
+}
+
+.incident-kicker {
+  margin: 0 0 12px;
+  color: #648b68;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.incident-card h1 {
+  margin: 0 0 12px;
+  font-size: clamp(30px, 5vw, 40px);
+  letter-spacing: -1.4px;
+}
+
+.incident-intro {
+  margin: 0 0 28px;
+  color: #68756f;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.incident-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.incident-card label {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.incident-card input,
+.incident-card select,
+.incident-card textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #dce2da;
+  border-radius: 9px;
+  background: #fff;
+  color: #10253b;
+  font: inherit;
+  font-size: 14px;
+}
+
+.incident-card textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.incident-card input:focus,
+.incident-card select:focus,
+.incident-card textarea:focus {
+  outline: 2px solid #a6d5a0;
+  outline-offset: 1px;
+}
+
+.incident-submit {
+  margin-top: 14px;
+  padding: 15px;
+  border: 0;
+  border-radius: 9px;
+  background: #10253b;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.incident-submit:hover {
+  background: #203d56;
+}
+
+.incident-preview {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid #cfe3ca;
+  border-radius: 10px;
+  background: #edf7ec;
+  overflow-wrap: anywhere;
+}
+
+.incident-preview h2 {
+  margin-top: 0;
+  font-size: 19px;
+}
+
+.incident-preview p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.incident-note {
+  margin: 12px 0 0;
+  color: #778078;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 520px) {
+  .incident-card {
+    padding: 25px 20px;
+  }
+}
