@@ -16,10 +16,13 @@ at `/api`. During development, Vite proxies these requests to `localhost:3000`.
 4. In another terminal, run `npm --prefix client install` and
    `npm --prefix client run dev`.
 
-Open the Vite URL shown in the terminal. The Express server serves the built
-frontend from `client/dist` when that directory exists. For deployment, build
-the frontend with `npm --prefix client run build`, set the server environment
-variables, and start the API with `npm --prefix server start`.
+Open the Vite URL shown in the terminal. For deployment as a Render web
+service, set the root directory to `client`, the build command to
+`npm install && npm run build`, and the start command to `npm start`. The start
+script serves the built frontend on Render's `PORT`.
+
+Deploy the Express API separately from the `server` directory with
+`npm start`. The API does not serve the frontend build.
 If the frontend and API are hosted on different origins, set the frontend build
 variable `VITE_API_URL` to the API base ending in `/api`, and configure
 `CORS_ORIGINS` on the server with the exact frontend origin.
