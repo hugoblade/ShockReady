@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import './CommunityCorps.css';
 
 const initialVolunteers = [
@@ -134,19 +134,7 @@ function CommunityCorps({ onBack }) {
   return (
     <main className="corps-page">
       {/* 👇 2. ADDED THE BACK BUTTON HERE 👇 */}
-      <button
-        onClick={onBack}
-        style={{
-          marginBottom: '20px',
-          background: 'transparent',
-          border: '1px solid var(--border-color)',
-          color: 'var(--text-main)',
-          padding: '8px 16px',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          fontWeight: 'bold'
-        }}
-      >
+      <button className="corps-back" type="button" onClick={onBack}>
         ← Back to Home
       </button>
 
@@ -164,7 +152,7 @@ function CommunityCorps({ onBack }) {
 
       <div className="corps-notice">
         Demo mode: volunteer information is stored only in the current page
-        session. Supabase integration will be added later.
+        session. This page is not connected to the API yet.
       </div>
 
       <section className="corps-stats" aria-label="Volunteer summary">

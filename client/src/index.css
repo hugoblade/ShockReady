@@ -1,16 +1,18 @@
 :root {
   /* LIGHT MODE (Exact Logo Specs) */
-  --bg-main: #F2F7FA;          /* Mist */
-  --text-main: #0B2545;        /* Cloud Outline / "SHOCK" Navy */
-  --text-muted: #5B6B7B;       /* Muted Gray */
-  
-  --accent-sage: #0B7A6E;      /* Circuit nodes / "READY" Teal */
-  --accent-teal: #0B7A6E;      /* Alias */
-  --accent-amber: #F59E0B;     /* Bolt Amber */
-  
+  --bg-main: #f3f6f8;
+  --text-main: #142b3b;
+  --text-muted: #617384;
+  --accent-sage: #087d70;
+  --accent-teal: #087d70;
+  --accent-amber: #e9a928;
+  --danger-red: #b54743;
+  --accent-yellow: #a96b0c;
   --card-bg: #FFFFFF;
   --navbar-bg: #FFFFFF;
-  --border-color: #D1E0E8;     /* Soft border to match Mist */
+  --border-color: #dbe3e8;
+  --surface-raised: #ffffff;
+  --shadow-soft: 0 16px 40px rgba(16, 37, 59, 0.07);
   
   font-family: Inter, "Segoe UI", Arial, sans-serif;
   font-synthesis: none;
@@ -21,29 +23,81 @@
 
 [data-theme="dark"] {
   /* DARK MODE (Exact Logo Specs) */
-  --bg-main: #0B1620;          /* Night */
-  --text-main: #E8F0F6;        /* Main text */
-  --text-muted: #8C9EAD;       /* Soft readable gray for dark mode */
-  
-  --accent-sage: #2DD4BF;      /* Teal Glow */
+  --bg-main: #0c1720;
+  --text-main: #edf3f6;
+  --text-muted: #a3b2bd;
   --accent-teal: #2DD4BF;
-  --accent-amber: #FBBF24;     /* Bolt Amber */
-  
-  --card-bg: #14253A;
-  --navbar-bg: #0B1620;
-  --border-color: #1E3A5F;
+  --accent-sage: #2dd4bf;
+  --accent-amber: #fbbf24;
+  --danger-red: #ff8176;
+  --accent-yellow: #fbbf24;
+  --card-bg: #14232e;
+  --surface-raised: #192b37;
+  --navbar-bg: rgba(12, 23, 32, 0.92);
+  --border-color: #293d4a;
+  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.22);
 }
 
 * { box-sizing: border-box; }
 html { min-width: 320px; scroll-behavior: smooth; }
-
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: var(--bg-main);
+  background:
+    radial-gradient(ellipse at 12% 0%, color-mix(in srgb, var(--accent-teal) 6%, transparent), transparent 34rem),
+    var(--bg-main);
   color: var(--text-main);
-  transition: background-color 0.3s, color 0.3s;
+  line-height: 1.55;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button, a, input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent-teal) 45%, transparent);
+  outline-offset: 3px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+input, select, textarea {
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent-teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-teal) 14%, transparent);
 }
 
 #root { min-height: 100vh; }
+
+::selection {
+  color: var(--text-main);
+  background: color-mix(in srgb, var(--accent-teal) 22%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

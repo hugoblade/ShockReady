@@ -1,0 +1,257 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrganizationType {
+  MUNICIPALITY
+  NGO
+  GOVERNMENT_AGENCY
+  EMERGENCY_SERVICE
+  OTHER
+}
+
+enum StaffRole {
+  ORG_ADMIN
+  MUNICIPAL_OFFICIAL
+  NGO_STAFF
+  RESPONDER
+  RESOURCE_COORDINATOR
+}
+
+enum OrganizationStatus {
+  PENDING
+  APPROVED
+  SUSPENDED
+  REJECTED
+}
+
+enum IncidentCategory {
+  FLOOD
+  STORM
+  DROUGHT
+  FIRE
+  WATER
+  ELECTRICITY
+  ROAD_DAMAGE
+  HEALTH
+  OTHER
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IncidentStatus {
+  REPORTED
+  UNDER_REVIEW
+  VERIFIED
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+}
+
+enum VerificationDecision {
+  VERIFIED
+  REJECTED
+  NEEDS_MORE_INFORMATION
+}
+
+enum AssignmentStatus {
+  ASSIGNED
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum DispatchStatus {
+  PREPARING
+  DISPATCHED
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+enum ConfirmationStatus {
+  CONFIRMED
+  PARTIALLY_RECEIVED
+  NOT_RECEIVED
+}
+
+model Organization {
+  id          String             @id @default(uuid()) @db.Uuid
+  name        String
+  type        OrganizationType
+  status      OrganizationStatus @default(PENDING)
+  email       String?            @unique
+  phone       String?
+  address     String?
+  district    String?
+  province    String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  staff       StaffProfile[]
+  verifications ReportVerification[]
+  assignments ResponseAssignment[]
+  dispatches  ResourceDispatch[]
+
+  @@index([status])
+  @@index([type, status])
+}
+
+model StaffProfile {
+  id             String     @id @default(uuid()) @db.Uuid
+  authUserId     String     @unique @db.Uuid
+  organizationId String     @db.Uuid
+  fullName       String
+  email          String
+  phone          String?
+  role           StaffRole
+  active         Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  verifications  ReportVerification[]
+  assignments    ResponseAssignment[]
+  dispatches     ResourceDispatch[]
+  confirmations  ReceiptConfirmation[]
+
+  @@index([organizationId, role])
+  @@index([active])
+}
+
+model IncidentReport {
+  id               String           @id @default(uuid()) @db.Uuid
+  referenceNumber  String           @unique @default(cuid())
+  title            String           @default("Incident report")
+  reporterAuthUserId String?        @db.Uuid
+  category         IncidentCategory
+  severity         IncidentSeverity @default(MEDIUM)
+  status           IncidentStatus   @default(REPORTED)
+  description      String
+  province         String
+  district         String
+  community        String?
+  locationDetails  String?
+  latitude         Float?
+  longitude        Float?
+  reporterPhone    String?
+  submissionMethod String           @default("WEB")
+  reportedAt       DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  resolvedAt       DateTime?
+
+  verifications    ReportVerification[]
+  assignments      ResponseAssignment[]
+  dispatches       ResourceDispatch[]
+  events           IncidentEvent[]
+
+  @@index([status, severity])
+  @@index([category, reportedAt])
+  @@index([province, district])
+  @@index([reportedAt])
+  @@index([reporterAuthUserId, reportedAt])
+}
+
+model ReportVerification {
+  id             String               @id @default(uuid()) @db.Uuid
+  incidentId     String               @db.Uuid
+  organizationId String               @db.Uuid
+  staffId        String               @db.Uuid
+  decision       VerificationDecision
+  notes          String?
+  verifiedAt     DateTime             @default(now())
+
+  incident       IncidentReport @relation(fields: [incidentId], references: [id], onDelete: Restrict)
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  staff          StaffProfile   @relation(fields: [staffId], references: [id], onDelete: Restrict)
+
+  @@index([incidentId, verifiedAt])
+  @@index([organizationId, verifiedAt])
+}
+
+model ResponseAssignment {
+  id             String           @id @default(uuid()) @db.Uuid
+  incidentId     String           @db.Uuid
+  organizationId String           @db.Uuid
+  assignedStaffId String?         @db.Uuid
+  status         AssignmentStatus @default(ASSIGNED)
+  instructions   String?
+  assignedAt     DateTime         @default(now())
+  acceptedAt     DateTime?
+  completedAt    DateTime?
+  updatedAt      DateTime         @updatedAt
+
+  incident       IncidentReport @relation(fields: [incidentId], references: [id], onDelete: Restrict)
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  assignedStaff  StaffProfile?  @relation(fields: [assignedStaffId], references: [id], onDelete: SetNull)
+
+  @@index([incidentId, status])
+  @@index([organizationId, status])
+  @@index([assignedStaffId, status])
+}
+
+model ResourceDispatch {
+  id             String         @id @default(uuid()) @db.Uuid
+  incidentId     String         @db.Uuid
+  organizationId String         @db.Uuid
+  dispatchedById String         @db.Uuid
+  resourceName   String
+  quantity       Int
+  unit           String?
+  destination    String
+  status         DispatchStatus @default(PREPARING)
+  dispatchedAt   DateTime?
+  deliveredAt    DateTime?
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  incident       IncidentReport       @relation(fields: [incidentId], references: [id], onDelete: Restrict)
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  dispatchedBy   StaffProfile         @relation(fields: [dispatchedById], references: [id], onDelete: Restrict)
+  confirmations  ReceiptConfirmation[]
+
+  @@index([incidentId, status])
+  @@index([organizationId, status])
+}
+
+model ReceiptConfirmation {
+  id             String             @id @default(uuid()) @db.Uuid
+  dispatchId     String             @db.Uuid
+  confirmedById  String             @db.Uuid
+  status         ConfirmationStatus
+  quantityReceived Int?
+  notes          String?
+  confirmedAt    DateTime           @default(now())
+
+  dispatch       ResourceDispatch @relation(fields: [dispatchId], references: [id], onDelete: Restrict)
+  confirmedBy    StaffProfile     @relation(fields: [confirmedById], references: [id], onDelete: Restrict)
+
+  @@index([dispatchId, confirmedAt])
+}
+
+
+model IncidentEvent {
+  id          String         @id @default(uuid()) @db.Uuid
+  incidentId  String         @db.Uuid
+  oldStatus   IncidentStatus?
+  newStatus   IncidentStatus
+  changedById String?        @db.Uuid
+  notes       String?
+  createdAt   DateTime       @default(now())
+
+  incident    IncidentReport @relation(fields: [incidentId], references: [id], onDelete: Restrict)
+
+  @@index([incidentId, createdAt])
+  @@index([changedById, createdAt])
+}

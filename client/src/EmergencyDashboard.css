@@ -8,7 +8,7 @@
 
 .emergency-header {
   background: var(--navbar-bg);
-  color: var(--navbar-text);
+  color: var(--text-main);
   padding: 38px clamp(20px, 5vw, 72px) 42px;
 }
 
@@ -41,12 +41,53 @@
 }
 
 .emergency-back {
-  color: var(--navbar-text);
+  color: var(--text-main);
   border: 1px solid var(--border-color);
   background: transparent;
   border-radius: 9px;
   padding: 9px 14px;
   cursor: pointer;
+}
+
+.emergency-stat,
+.emergency-section {
+  box-shadow: var(--shadow-soft);
+}
+
+.emergency-stat {
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.emergency-stat:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent-teal) 35%, var(--border-color));
+}
+
+.emergency-back,
+.emergency-table select {
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.emergency-back:hover {
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+}
+
+.emergency-table tbody tr {
+  transition: background 140ms ease;
+}
+
+.emergency-table tbody tr:hover {
+  background: color-mix(in srgb, var(--accent-teal) 4%, var(--card-bg));
+}
+
+.emergency-resource {
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.emergency-resource:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent-teal) 35%, var(--border-color));
 }
 
 .emergency-demo-notice {

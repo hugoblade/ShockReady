@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet'
-import { supabase } from './supabase'
+import { api } from './api.js'
 import 'leaflet/dist/leaflet.css'
 import './IncidentDashboard.css'
 
@@ -19,16 +19,7 @@ export default function IncidentDashboard({ onBack }) {
 
     async function loadIncidents() {
       try {
-        const { data: authData, error: authError } = await supabase.auth.getUser()
-        if (authError) throw authError
-        if (!authData.user) throw new Error('Please sign in to view your reports.')
-
-        const { data, error: queryError } = await supabase
-          .from('incidents')
-          .select('id, title, description, category, status, priority, latitude, longitude, created_at')
-          .order('created_at', { ascending: false })
-
-        if (queryError) throw queryError
+        const { data } = await api.getMyIncidents()
         if (active) setIncidents(data ?? [])
       } catch (err) {
         if (active) setError(err.message || 'Could not load incident reports.')
@@ -39,14 +30,10 @@ export default function IncidentDashboard({ onBack }) {
 
     async function loadPublicIncidents() {
       try {
-        const { data, error: queryError } = await supabase
-          .from('public_incidents')
-          .select('*')
-
-        if (queryError) throw queryError
+        const { data } = await api.getPublicIncidents()
         if (active) setPublicIncidents(data ?? [])
-      } catch {
-        if (active) setMapError('The public map will be available when the backend view is deployed.')
+      } catch (err) {
+        if (active) setMapError(err.message || 'Could not load public alerts.')
       } finally {
         if (active) setMapLoading(false)
       }
@@ -82,7 +69,7 @@ export default function IncidentDashboard({ onBack }) {
 
       <section className="dashboard-section">
         <h2>Verified public incident map</h2>
-        <p className="dashboard-muted">Only incidents exposed by the public backend view appear here.</p>
+        <p className="dashboard-muted">Only verified incidents appear on the public map.</p>
 
         <div className="dashboard-map">
           <MapContainer center={DEFAULT_CENTER} zoom={6} scrollWheelZoom style={{ height: '100%', width: '100%' }}>
@@ -130,7 +117,7 @@ export default function IncidentDashboard({ onBack }) {
               </div>
               <h3>{incident.title}</h3>
               <p>{incident.description}</p>
-              <small>Reported {incident.created_at ? new Date(incident.created_at).toLocaleString() : 'date unavailable'}</small>
+              <small>Reported {incident.reportedAt ? new Date(incident.reportedAt).toLocaleString() : 'date unavailable'}</small>
             </article>
           ))}
         </div>

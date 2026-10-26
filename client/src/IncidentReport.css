@@ -1,192 +1,228 @@
-.incident-page {
+.incident-report-page {
   min-height: 100vh;
-  padding: 28px 20px 48px;
-  background: #f4f3ed;
-  color: #10253b;
-  font-family: inherit;
+  padding: 26px clamp(16px, 5vw, 64px) 64px;
+  color: var(--text-main);
 }
 
 .incident-back {
-  display: inline-block;
-  margin-bottom: 24px;
-  color: #365344;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  margin: 0 auto 22px;
+  padding: 0 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 
-.incident-card {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 650px;
+.incident-back:hover {
+  transform: translateX(-2px);
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+}
+
+.incident-report-container {
+  width: min(100%, 820px);
   margin: 0 auto;
-  padding: 36px;
-  background: #fff;
-  border: 1px solid #e3e7df;
+  padding: clamp(22px, 4vw, 46px);
+  border: 1px solid var(--border-color);
   border-radius: 22px;
-  box-shadow: 0 18px 55px rgb(16 37 59 / 7%);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-soft);
 }
 
-.incident-kicker {
-  margin: 0 0 12px;
-  color: #648b68;
-  font-size: 11px;
+.incident-report-header {
+  margin-bottom: 28px;
+  padding-bottom: 23px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.incident-report-header::before {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--accent-teal);
+  content: "COMMUNITY RESPONSE  /  INCIDENT REPORT";
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 1.5px;
 }
 
-.incident-card h1 {
-  margin: 0 0 12px;
-  font-size: clamp(30px, 5vw, 40px);
-  letter-spacing: -1.4px;
+.incident-report-header h1 {
+  margin: 0 0 10px;
+  font-size: clamp(30px, 5vw, 43px);
+  line-height: 1.1;
+  letter-spacing: -1.7px;
 }
 
-.incident-intro {
-  margin: 0 0 28px;
-  color: #68756f;
+.incident-report-header p {
+  max-width: 590px;
+  margin: 0;
+  color: var(--text-muted);
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 1.75;
 }
 
-.incident-card form {
+.incident-report-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 18px;
+}
+
+.incident-report-form .form-group {
   display: flex;
+  min-width: 0;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
-.incident-card label {
-  margin-top: 10px;
-  font-size: 13px;
-  font-weight: 700;
+.incident-report-form .form-group:has(textarea),
+.incident-report-form .form-group:has(.incident-location-map),
+.incident-report-form .form-group:has(.location-coordinates),
+.incident-report-form .form-group:nth-last-of-type(1),
+.incident-report-form .submit-incident-button {
+  grid-column: 1 / -1;
 }
 
-.incident-card input,
-.incident-card select,
-.incident-card textarea {
-  box-sizing: border-box;
+.incident-report-form label {
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.incident-report-form input,
+.incident-report-form select,
+.incident-report-form textarea {
   width: 100%;
-  padding: 13px 14px;
-  border: 1px solid #dce2da;
-  border-radius: 9px;
-  background: #fff;
-  color: #10253b;
-  font: inherit;
+  min-height: 46px;
+  padding: 11px 13px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-main);
+  color: var(--text-main);
   font-size: 14px;
 }
 
-.incident-card textarea {
+.incident-report-form textarea {
+  min-height: 130px;
   resize: vertical;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
-.incident-card input:focus,
-.incident-card select:focus,
-.incident-card textarea:focus {
-  outline: 2px solid #a6d5a0;
-  outline-offset: 1px;
+.incident-report-form input::placeholder,
+.incident-report-form textarea::placeholder {
+  color: color-mix(in srgb, var(--text-muted) 72%, transparent);
 }
 
-.incident-submit {
-  margin-top: 14px;
-  padding: 15px;
-  border: 0;
-  border-radius: 9px;
-  background: #10253b;
-  color: #fff;
-  cursor: pointer;
-  font: inherit;
-  font-weight: 700;
-}
-
-.incident-submit:hover {
-  background: #203d56;
-}
-
-.incident-preview {
-  margin-top: 20px;
-  padding: 18px;
-  border: 1px solid #cfe3ca;
-  border-radius: 10px;
-  background: #edf7ec;
-  overflow-wrap: anywhere;
-}
-
-.incident-preview h2 {
-  margin-top: 0;
-  font-size: 19px;
-}
-
-.incident-preview p {
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.incident-note {
-  margin: 12px 0 0;
-  color: #778078;
+.incident-report-form .form-group > p {
+  margin: 0;
+  color: var(--text-muted);
   font-size: 12px;
   line-height: 1.6;
 }
 
-@media (max-width: 520px) {
-  .incident-card {
-    padding: 25px 20px;
-  }
-}
-.incident-location-button {
-  margin: 4px 0 8px;
-  padding: 12px 14px;
-  border: 1px solid #cfe3ca;
-  border-radius: 9px;
-  background: #edf7ec;
-  color: #365344;
+.incident-report-form button:not(.submit-incident-button) {
+  align-self: flex-start;
+  min-height: 42px;
+  padding: 0 15px;
+  border: 1px solid color-mix(in srgb, var(--accent-teal) 35%, var(--border-color));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent-teal) 9%, var(--card-bg));
+  color: var(--accent-teal);
+  font-size: 13px;
+  font-weight: 750;
   cursor: pointer;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 700;
+  transition: transform 160ms ease, background 160ms ease;
 }
 
-.incident-location-button:hover {
-  background: #dcefd8;
+.incident-report-form button:not(.submit-incident-button):hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--accent-teal) 16%, var(--card-bg));
 }
 
-.incident-location-button:disabled {
-  opacity: 0.65;
-  cursor: wait;
+.location-coordinates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  padding: 11px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent-teal) 22%, var(--border-color));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent-teal) 6%, var(--card-bg));
+}
+
+.location-coordinates p {
+  color: var(--text-main) !important;
 }
 
 .incident-location-map {
   width: 100%;
-  height: 320px;
-  margin-top: 4px;
+  height: 340px;
   overflow: hidden;
-  border: 1px solid #dce2da;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
+  background: var(--bg-main);
+  isolation: isolate;
 }
 
-.incident-map {
+.incident-location-map .leaflet-container {
   width: 100%;
   height: 100%;
+  font: inherit;
 }
 
-.incident-location-status {
-  margin: 0;
+.location-hint {
   padding: 10px 12px;
   border-radius: 8px;
-  background: #f5f5f0;
-  color: #68756f;
-  font-size: 12px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
+  background: color-mix(in srgb, var(--accent-amber) 10%, var(--card-bg));
 }
 
-.incident-location-status.selected {
-  background: #edf7ec;
-  color: #365344;
+.submit-incident-button {
+  min-height: 50px;
+  margin-top: 6px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--text-main);
+  color: var(--bg-main);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
 
-@media (max-width: 520px) {
-  .incident-location-map {
-    height: 260px;
-  }
+.submit-incident-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: var(--accent-teal);
+  box-shadow: 0 9px 20px color-mix(in srgb, var(--accent-teal) 25%, transparent);
+}
+
+.success-message,
+.error-message {
+  margin: 0 0 18px;
+  padding: 13px 15px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.success-message {
+  background: color-mix(in srgb, var(--accent-teal) 10%, var(--card-bg));
+  color: var(--accent-teal);
+}
+
+.error-message {
+  background: color-mix(in srgb, var(--danger-red) 10%, var(--card-bg));
+  color: var(--danger-red);
+}
+
+@media (max-width: 640px) {
+  .incident-report-page { padding-top: 16px; }
+  .incident-report-container { border-radius: 16px; }
+  .incident-report-form { grid-template-columns: 1fr; gap: 17px; }
+  .incident-report-form .form-group,
+  .incident-report-form .submit-incident-button { grid-column: 1; }
+  .incident-location-map { height: 300px; }
 }

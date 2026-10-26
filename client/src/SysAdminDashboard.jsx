@@ -1,31 +1,112 @@
-export default function SysAdminDashboard({ onBack }) {
-    return (
-        <div style={{ padding: '40px', background: 'var(--bg-main)', minHeight: '100vh', color: 'var(--text-main)' }}>
-            <button onClick={onBack} className="button button-small" style={{ marginBottom: '20px' }}>← Back to Home</button>
-            <div className="card" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                <h1 style={{ color: 'var(--accent-teal)' }}>System Admin Dashboard</h1>
-                <p style={{ color: 'var(--text-muted)' }}>Manage platform access and approve registered organizations.</p>
+import { useCallback, useEffect, useState } from 'react'
+import { api } from './api.js'
+import './OperationsDashboard.css'
 
-                <h3 style={{ marginTop: '30px' }}>Pending Organization Approvals</h3>
-                <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-                    <thead>
-                        <tr style={{ borderBottom: '2px solid var(--border-color)', textAlign: 'left' }}>
-                            <th style={{ padding: '10px' }}>Organization Name</th>
-                            <th style={{ padding: '10px' }}>Type</th>
-                            <th style={{ padding: '10px' }}>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-                            <td style={{ padding: '10px' }}>Lusaka City Council</td>
-                            <td style={{ padding: '10px' }}>Municipality</td>
-                            <td style={{ padding: '10px' }}>
-                                <button className="button button-small" style={{ background: 'var(--accent-sage)' }}>Approve</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+export default function SysAdminDashboard({ onBack }) {
+  const [organizations, setOrganizations] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [savingId, setSavingId] = useState('')
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+
+  const loadOrganizations = useCallback(async () => {
+    setError('')
+    try {
+      const result = await api.getPendingOrganizations()
+      setOrganizations(result.organizations ?? [])
+    } catch (loadError) {
+      setError(loadError.message || 'Could not load pending organizations.')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    async function initialize() {
+      const result = await api.getPendingOrganizations().catch((loadError) => {
+        if (active) setError(loadError.message || 'Could not load pending organizations.')
+        return null
+      })
+      if (active && result) setOrganizations(result.organizations ?? [])
+      if (active) setLoading(false)
+    }
+    initialize()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  async function reviewOrganization(organization, status) {
+    setSavingId(organization.id)
+    setError('')
+    setNotice('')
+    try {
+      await api.updateOrganizationApproval(organization.id, status)
+      setNotice(`${organization.name} ${status.toLowerCase()}.`)
+      await loadOrganizations()
+    } catch (reviewError) {
+      setError(reviewError.message || 'Could not update organization approval.')
+    } finally {
+      setSavingId('')
+    }
+  }
+
+  return (
+    <main className="operations-page">
+      <header className="operations-header">
+        <button type="button" className="operation-button operation-button-secondary" onClick={onBack}>
+          ← Home
+        </button>
+        <p className="operations-eyebrow">PLATFORM ADMINISTRATION</p>
+        <h1>Organization approvals</h1>
+        <p>Review registrations before organizations can access operational tools.</p>
+      </header>
+
+      <section className="operations-panel">
+        <div className="operations-panel-heading">
+          <div>
+            <h2>Pending organizations</h2>
+            <p>{organizations.length} waiting for review</p>
+          </div>
+          <button type="button" className="operation-button operation-button-secondary" onClick={loadOrganizations} disabled={loading}>
+            {loading ? 'Refreshing…' : 'Refresh'}
+          </button>
         </div>
-    );
+        {error && <p className="operation-message operation-error" role="alert">{error}</p>}
+        {notice && <p className="operation-message operation-success" role="status">{notice}</p>}
+        {loading ? (
+          <p className="operations-empty">Loading organization registrations…</p>
+        ) : organizations.length === 0 ? (
+          <p className="operations-empty">There are no pending registrations.</p>
+        ) : (
+          <div className="operations-table-wrap">
+            <table className="operations-table">
+              <thead>
+                <tr><th>Organization</th><th>Type</th><th>Contact</th><th>Location</th><th>Actions</th></tr>
+              </thead>
+              <tbody>
+                {organizations.map((organization) => (
+                  <tr key={organization.id}>
+                    <td><strong>{organization.name}</strong><small>{organization.createdAt ? new Date(organization.createdAt).toLocaleDateString() : ''}</small></td>
+                    <td>{organization.type.replaceAll('_', ' ')}</td>
+                    <td>{organization.email || organization.phone || 'Not provided'}</td>
+                    <td>{[organization.district, organization.province].filter(Boolean).join(', ') || 'Not provided'}</td>
+                    <td className="operations-actions">
+                      <button type="button" className="operation-button operation-button-primary" disabled={savingId === organization.id} onClick={() => reviewOrganization(organization, 'APPROVED')}>
+                        {savingId === organization.id ? 'Saving…' : 'Approve'}
+                      </button>
+                      <button type="button" className="operation-button operation-button-danger" disabled={savingId === organization.id} onClick={() => reviewOrganization(organization, 'REJECTED')}>
+                        Reject
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    </main>
+  )
 }

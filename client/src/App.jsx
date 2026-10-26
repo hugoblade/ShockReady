@@ -2,59 +2,123 @@ import './App.css'
 import { useState, useEffect } from 'react'
 import Auth from './Auth.jsx'
 import IncidentReport from './IncidentReport.jsx'
-
-// Import the 4 specific dashboards
+import IncidentDashboard from './IncidentDashboard.jsx'
 import SysAdminDashboard from './SysAdminDashboard.jsx'
 import MunicipalityDashboard from './MunicipalityDashboard.jsx'
 import VolunteerDashboard from './VolunteerDashboard.jsx'
+import ResourceTracking from './ResourceTracking.jsx'
+import OrganizationRegistration from './OrganizationRegistration.jsx'
+import { api } from './api.js'
 
 const steps = [
-  { number: '01', title: 'Report', description: 'Give your community a voice...' },
-  { number: '02', title: 'Verify', description: 'Help response teams identify...' },
-  { number: '03', title: 'Respond', description: 'Connect verified reports...' },
-  { number: '04', title: 'Recover', description: 'Follow progress...' },
+  {
+    number: '01',
+    title: 'Report',
+    description: 'Share a local incident and mark where help is needed.',
+    image: '/images/reporting-local-needs.jpg',
+    imageAlt: 'Community members using a computer to share local information',
+  },
+  {
+    number: '02',
+    title: 'Verify',
+    description: 'Help response teams understand what is happening on the ground.',
+    image: '/images/community-review.jpg',
+    imageAlt: 'A team meeting to review information and coordinate a response',
+  },
+  {
+    number: '03',
+    title: 'Respond',
+    description: 'Coordinate people and essential resources where they can help.',
+    image: '/images/community-response.jpg',
+    imageAlt: 'A volunteer ready to support a community response',
+  },
+  {
+    number: '04',
+    title: 'Recover',
+    description: 'Support community-led recovery and stronger preparation.',
+    image: '/images/community-recovery.jpg',
+    imageAlt: 'Hands protecting a young seedling as it grows',
+  },
 ]
 
 function App() {
   const [showAuth, setShowAuth] = useState(false)
   const [showIncidentReport, setShowIncidentReport] = useState(false)
-  const [activeDashboard, setActiveDashboard] = useState(null) // Replaces the multiple show states
-
-  // THEME STATE
+  const [showOrganizationRegistration, setShowOrganizationRegistration] = useState(false)
+  const [showIncidentDashboard, setShowIncidentDashboard] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
+  const [authError, setAuthError] = useState('')
   const [theme, setTheme] = useState('light')
 
-  // 🔒 USER ROLE STATE (Mocked for now)
-  // Change this to 'System Admin', 'Municipality', or 'Volunteer' to test!
-  const [userRole, setUserRole] = useState('Resident')
-
-  // APPLY THEME
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    let active = true
+
+    if (!api.hasSession()) return undefined
+
+    api.getMe()
+      .then(({ user }) => {
+        if (active) setCurrentUser(user)
+      })
+      .catch((error) => {
+        if (error.status === 401 || error.status === 403) {
+          api.signOut()
+        } else if (active) {
+          setAuthError(error.message)
+        }
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  async function handleAuthenticated() {
+    const { user } = await api.getMe()
+    setCurrentUser(user)
+    setAuthError('')
+    setShowAuth(false)
+    setShowIncidentDashboard(true)
+  }
 
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light')
   }
 
-  // ==========================================
-  // ROUTING LOGIC
-  // ==========================================
-
-  // 1. Staff Dashboard Routes
-  if (activeDashboard) {
-    if (userRole === 'System Admin') return <SysAdminDashboard onBack={() => setActiveDashboard(null)} />
-    if (userRole === 'Municipality') return <MunicipalityDashboard onBack={() => setActiveDashboard(null)} />
-    if (userRole === 'Volunteer') return <VolunteerDashboard onBack={() => setActiveDashboard(null)} />
-    return <div>Unauthorized</div>
+  if (showIncidentDashboard) {
+    const onBack = () => setShowIncidentDashboard(false)
+    if (currentUser?.role === 'SYSTEM_ADMIN') {
+      return <SysAdminDashboard onBack={onBack} />
+    }
+    if (['ORG_ADMIN', 'MUNICIPAL_OFFICIAL'].includes(currentUser?.role)) {
+      return <MunicipalityDashboard onBack={onBack} user={currentUser} />
+    }
+    if (currentUser?.role === 'RESPONDER') {
+      return <VolunteerDashboard onBack={onBack} />
+    }
+    if (currentUser?.role === 'RESOURCE_COORDINATOR') {
+      return <ResourceTracking onBack={onBack} />
+    }
+    if (currentUser?.role === 'NGO_STAFF') {
+      return <MunicipalityDashboard onBack={onBack} user={currentUser} />
+    }
+    return <IncidentDashboard onBack={onBack} />
   }
-
-  // 2. Resident Report Route (Public)
   if (showIncidentReport) return <IncidentReport onBack={() => setShowIncidentReport(false)} />
-
-  // 3. Auth Route
-  if (showAuth) return <Auth onBack={() => setShowAuth(false)} />
-
-  // 4. Landing Page
+  if (showOrganizationRegistration) {
+    return <OrganizationRegistration onBack={() => setShowOrganizationRegistration(false)} />
+  }
+  if (showAuth) {
+    return (
+      <Auth
+        onBack={() => setShowAuth(false)}
+        onAuthenticated={handleAuthenticated}
+      />
+    )
+  }
   return (
     <main className="site-shell">
       <header className="navbar">
@@ -77,23 +141,39 @@ function App() {
             {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
           </button>
 
-          {/* 🔒 STAFF ROUTING BASED ON ROLE */}
-          {userRole === 'System Admin' && (
-            <button className="sign-in" type="button" onClick={() => setActiveDashboard('sysadmin')}>Admin Panel</button>
+          {currentUser ? (
+            <>
+              <button
+                className="sign-in"
+                type="button"
+                onClick={() => setShowIncidentDashboard(true)}
+              >
+                Operations dashboard
+              </button>
+              <button
+                className="button button-small"
+                type="button"
+                onClick={() => {
+                  api.signOut()
+                  setCurrentUser(null)
+                }}
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <button
+              className="button button-small"
+              type="button"
+              onClick={() => setShowAuth(true)}
+            >
+              Staff Portal <span aria-hidden="true">↗</span>
+            </button>
           )}
-          {userRole === 'Municipality' && (
-            <button className="sign-in" type="button" onClick={() => setActiveDashboard('municipality')}>Municipality Portal</button>
-          )}
-          {userRole === 'Volunteer' && (
-            <button className="sign-in" type="button" onClick={() => setActiveDashboard('volunteer')}>My Tasks</button>
-          )}
-
-          <a className="button button-small" href="#staff-portal" onClick={(event) => { event.preventDefault(); setShowAuth(true); }}>
-            Staff Portal <span aria-hidden="true">↗</span>
-          </a>
         </div>
       </header>
 
+      {authError && <p role="alert">{authError}</p>}
       {/* HERO SECTION */}
       <section className="hero-section" id="home">
         <div className="hero-copy">
@@ -116,12 +196,13 @@ function App() {
         </div>
 
         <div className="hero-visual">
-          <img src="/hero-image.jpg" alt="Rain falling on green leaves" className="hero-image" />
+          <img src="/images/hero-community-farming.jpg" alt="Farm workers harvesting crops in a green field" className="hero-image" />
           <div className="visual-caption">
             <span className="caption-symbol">↗</span>
             <div>
               <strong>Resilience starts here.</strong>
               <p>One community. One shared purpose.</p>
+              <a className="photo-credit" href="https://unsplash.com" target="_blank" rel="noreferrer">Photo via Unsplash</a>
             </div>
           </div>
           <span className="visual-label">BUILT FOR OUR COMMUNITIES</span>
@@ -157,6 +238,7 @@ function App() {
         <div className="steps-grid">
           {steps.map((step) => (
             <article className="step-card" key={step.number}>
+              <img className="step-image" src={step.image} alt={step.imageAlt} loading="lazy" />
               <span className="step-number">{step.number}</span>
               <h3>{step.title}</h3>
               <p>{step.description}</p>
@@ -180,7 +262,10 @@ function App() {
           <h2>Better prepared. Better connected. Ready together.</h2>
           <p>Every meaningful response starts with understanding what is happening.</p>
         </div>
-        <a className="button button-light" href="#home">Explore ShockReady <span aria-hidden="true">↑</span></a>
+        <div className="closing-actions">
+          <button className="button button-light" type="button" onClick={() => setShowIncidentReport(true)}>Report an issue <span aria-hidden="true">→</span></button>
+          <button className="button button-outline-light" type="button" onClick={() => setShowOrganizationRegistration(true)}>Register an organization</button>
+        </div>
       </section>
 
       <footer className="footer">
@@ -188,7 +273,7 @@ function App() {
           <img src={theme === 'light' ? '/logo-light.png' : '/logo-dark.png'} alt="ShockReady Logo" style={{ height: '35px', width: 'auto', objectFit: 'contain' }} />
         </a>
         <p>Turning Community Voices into Climate Action.</p>
-        <span>Community resilience starts with us.</span>
+        <span>Community resilience starts with us. · <a href="https://unsplash.com" target="_blank" rel="noreferrer">Photography via Unsplash</a></span>
       </footer>
     </main>
   )
