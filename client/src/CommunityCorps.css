@@ -6,15 +6,43 @@
   font-family: inherit;
 }
 
+.corps-back {
+  min-height: 42px;
+  margin-bottom: 20px;
+  padding: 0 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.corps-back:hover {
+  transform: translateX(-2px);
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+}
+
+.corps-page {
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  padding: clamp(18px, 4vw, 56px);
+}
+
 .corps-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
   padding: 32px;
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   background: var(--navbar-bg);
-  color: var(--navbar-text);
+  color: var(--text-main);
+  box-shadow: var(--shadow-soft);
 }
 
 .corps-header h1 {
@@ -49,6 +77,7 @@
   background: var(--card-bg);
   color: var(--text-main);
   line-height: 1.5;
+  box-shadow: var(--shadow-soft);
 }
 
 .corps-stats {
@@ -132,8 +161,7 @@
 
 .corps-page input:focus,
 .corps-page select:focus {
-  outline: 2px solid var(--accent-sage);
-  outline-offset: 2px;
+  border-color: var(--accent-teal);
 }
 
 .corps-skills {
@@ -176,14 +204,38 @@
   border: 0;
   border-radius: 9px;
   background: var(--accent-sage);
-  color: #0B1620; /* Dark text for contrast on teal button */
+  color: #062a27;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
 }
 
 .corps-primary-button:hover {
-  filter: brightness(0.9);
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--accent-teal) 22%, transparent);
+}
+
+.corps-primary-button,
+.corps-skill-option,
+.corps-volunteer-card {
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.corps-skill-option:has(input:checked) {
+  background: color-mix(in srgb, var(--accent-teal) 12%, var(--card-bg));
+  color: var(--accent-teal);
+}
+
+.corps-stat,
+.corps-panel {
+  box-shadow: var(--shadow-soft);
+}
+
+.corps-volunteer-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent-teal) 40%, var(--border-color));
+  box-shadow: var(--shadow-soft);
 }
 
 .corps-message {

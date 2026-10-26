@@ -1,16 +1,31 @@
-# React + Vite
+# ShockReady client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The Vite frontend sends authentication and incident requests to the Express API
+at `/api`. During development, Vite proxies these requests to `localhost:3000`.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Create `server/.env` from `server/.env.example` and provide the Supabase
+   project URL, publishable key, secret key, and PostgreSQL connection string.
+   Keep the secret key on the server; never add it to a `VITE_` variable or
+   commit it.
+2. Run `npm --prefix server run db:migrate` and
+   `npm --prefix server run db:generate` to prepare the Prisma database.
+3. In one terminal, run `npm --prefix server install` and
+   `npm --prefix server run dev`.
+4. In another terminal, run `npm --prefix client install` and
+   `npm --prefix client run dev`.
 
-## React Compiler
+Open the Vite URL shown in the terminal. The Express server serves the built
+frontend from `client/dist` when that directory exists. For deployment, build
+the frontend with `npm --prefix client run build`, set the server environment
+variables, and start the API with `npm --prefix server start`.
+If the frontend and API are hosted on different origins, set the frontend build
+variable `VITE_API_URL` to the API base ending in `/api`, and configure
+`CORS_ORIGINS` on the server with the exact frontend origin.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The API-backed flows include account sign-up/sign-in, organization registration
+and approval, staff management, incident review and response assignments,
+responder tasks, resource dispatches, personal incident history, and verified
+public map alerts. The volunteer registry remains demo-only because there is no
+volunteer model or API in the server.

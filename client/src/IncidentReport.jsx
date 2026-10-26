@@ -1,126 +1,129 @@
 import { useEffect, useState } from 'react'
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  useMap,
-  useMapEvents,
-} from 'react-leaflet'
+import { CircleMarker, MapContainer, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet'
+import { api } from './api.js'
 import 'leaflet/dist/leaflet.css'
-import { supabase } from './supabase'
 import './IncidentReport.css'
 
-const DEFAULT_CENTER = [-15.4167, 28.2833]
+const DEFAULT_MAP_CENTER = [-15.4167, 28.2833]
 
-function MapClickHandler({ onSelect }) {
+function LocationMarker({ position, onSelect }) {
   useMapEvents({
     click(event) {
-      onSelect({
-        latitude: event.latlng.lat,
-        longitude: event.latlng.lng,
-      })
+      onSelect(event.latlng.lat, event.latlng.lng)
     },
   })
 
-  return null
+  if (!position) return null
+
+  return (
+    <CircleMarker center={position} radius={9} pathOptions={{ color: '#087d70', fillOpacity: 0.8 }}>
+      <Popup>Selected incident location</Popup>
+    </CircleMarker>
+  )
 }
 
-function RecenterMap({ position }) {
+function MapCenterUpdater({ position }) {
   const map = useMap()
+  const latitude = position?.[0]
+  const longitude = position?.[1]
 
   useEffect(() => {
-    if (position) {
-      map.flyTo([position.latitude, position.longitude], 15)
+    if (latitude !== undefined && longitude !== undefined) {
+      map.setView([latitude, longitude], Math.max(map.getZoom(), 12))
     }
-  }, [map, position])
+  }, [latitude, longitude, map])
 
   return null
 }
 
-export default function IncidentReport() {
+export default function IncidentReport({ onBack }) {
   const [form, setForm] = useState({
     title: '',
     description: '',
     category: 'Flooding',
     location: '',
+    province: '',
+    district: '',
     latitude: '',
     longitude: '',
   })
 
   const [loading, setLoading] = useState(false)
-  const [locating, setLocating] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
-  const hasCoordinates =
-    form.latitude.trim() !== '' &&
-    form.longitude.trim() !== ''
-
-  const position = hasCoordinates
-    ? {
-      latitude: Number(form.latitude),
-      longitude: Number(form.longitude),
-    }
+  const [hasCoordinates, setHasCoordinates] = useState(false)
+  const selectedPosition = hasCoordinates
+    ? [Number(form.latitude), Number(form.longitude)]
     : null
 
-  function handleChange(event) {
-    const { name, value } = event.target
-    setForm((current) => ({ ...current, [name]: value }))
-    setMessage('')
-    setError('')
-  }
-
-  function selectLocation(coords) {
-    setForm((current) => ({
-      ...current,
-      latitude: String(coords.latitude),
-      longitude: String(coords.longitude),
+  const setLocation = (latitude, longitude) => {
+    setForm((previousForm) => ({
+      ...previousForm,
+      latitude: String(Number(latitude.toFixed(6))),
+      longitude: String(Number(longitude.toFixed(6))),
     }))
-    setMessage('')
+    setHasCoordinates(true)
+    setMessage('Incident location selected on the map.')
     setError('')
   }
 
-  function useCurrentLocation() {
+  const handleChange = (event) => {
+    const { name, value } = event.target
+
+    setForm((previousForm) => ({
+      ...previousForm,
+      [name]: value,
+    }))
+  }
+
+  const handleLocation = () => {
     setError('')
     setMessage('')
 
     if (!navigator.geolocation) {
-      setError('Your browser does not support location detection. Please tap the map to select a location.')
+      setError('Your browser does not support location detection.')
       return
     }
 
-    setLocating(true)
+    setLoading(true)
 
     navigator.geolocation.getCurrentPosition(
-      (result) => {
-        selectLocation({
-          latitude: result.coords.latitude,
-          longitude: result.coords.longitude,
-        })
-        setLocating(false)
+      (position) => {
+        const { latitude, longitude } = position.coords
+
+        setLocation(latitude, longitude)
+        setMessage('Your current location has been captured.')
+        setLoading(false)
       },
       (locationError) => {
-        const explanation =
-          locationError.code === 1
-            ? 'Location permission was denied. Allow location access in your browser, or tap the map to select the incident location.'
-            : locationError.code === 2
-              ? 'Your location could not be determined. Try again or tap the map.'
-              : 'Location detection timed out. Try again or tap the map.'
+        let errorMessage = 'Unable to get your location.'
 
-        setError(explanation)
-        setLocating(false)
+        if (locationError.code === locationError.PERMISSION_DENIED) {
+          errorMessage =
+            'Location permission was denied. Allow location access or try again.'
+        } else if (
+          locationError.code === locationError.POSITION_UNAVAILABLE
+        ) {
+          errorMessage = 'Your location is currently unavailable.'
+        } else if (locationError.code === locationError.TIMEOUT) {
+          errorMessage = 'Location detection timed out. Please try again.'
+        }
+
+        setError(errorMessage)
+        setLoading(false)
       },
       {
         enableHighAccuracy: true,
         timeout: 15000,
-        maximumAge: 60000,
+        maximumAge: 0,
       }
     )
   }
 
-  // 👇 THIS IS THE FIXED FUNCTION 👇
-  async function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault()
+
     setLoading(true)
     setMessage('')
     setError('')
@@ -131,6 +134,8 @@ export default function IncidentReport() {
 
       if (
         !hasCoordinates ||
+        form.latitude.trim() === '' ||
+        form.longitude.trim() === '' ||
         !Number.isFinite(latitude) ||
         !Number.isFinite(longitude) ||
         latitude < -90 ||
@@ -138,180 +143,263 @@ export default function IncidentReport() {
         longitude < -180 ||
         longitude > 180
       ) {
-        throw new Error('Please select the incident location on the map or use your current location.')
+        throw new Error(
+          'Please capture your current location before submitting the report.'
+        )
       }
 
-      // 🚨 ANONYMOUS INSERT (No login required)
-      const { error: insertError } = await supabase
-        .from('incidents')
-        .insert({
-          title: form.title.trim(),
-          description: form.description.trim(),
-          category: form.category,
-          location: `SRID=4326;POINT(${longitude} ${latitude})`,
-          status: 'Reported' // Added default status
-        })
+      if (!form.title.trim()) {
+        throw new Error('Please enter a report title.')
+      }
 
-      if (insertError) throw insertError
+      if (!form.description.trim()) {
+        throw new Error('Please describe the incident.')
+      }
 
-      setMessage('Incident report submitted successfully. Help is on the way.')
+      if (!form.province.trim()) {
+        throw new Error('Please enter the province.')
+      }
+
+      if (!form.district.trim()) {
+        throw new Error('Please enter the district.')
+      }
+
+      const categoryMap = {
+        Flooding: 'FLOOD',
+        Drought: 'DROUGHT',
+        'Water supply disruption': 'WATER',
+        'Damaged road or infrastructure': 'ROAD_DAMAGE',
+        'Power outage': 'ELECTRICITY',
+        'Food insecurity': 'OTHER',
+        Other: 'OTHER',
+      }
+
+      const incident = {
+        title: form.title.trim(),
+        category: categoryMap[form.category] || 'OTHER',
+        severity: 'MEDIUM',
+        description: form.description.trim(),
+        province: form.province.trim(),
+        district: form.district.trim(),
+        locationDetails: form.location.trim() || null,
+        latitude,
+        longitude,
+        submissionMethod: 'WEB',
+      }
+
+      const result = await api.createIncident(incident)
+
+      if (!result || result.success !== true) {
+        throw new Error(
+          result?.message || 'The incident report could not be submitted.'
+        )
+      }
+
+      setMessage(
+        result.message || 'Your incident report was submitted successfully.'
+      )
+
       setForm({
         title: '',
         description: '',
         category: 'Flooding',
         location: '',
+        province: '',
+        district: '',
         latitude: '',
         longitude: '',
       })
-    } catch (err) {
+
+      setHasCoordinates(false)
+    } catch (submitError) {
       setError(
-        err.message ||
-        'We could not submit your report. Please try again.'
+        submitError.message ||
+          'Something went wrong while submitting your report. Please try again.'
       )
     } finally {
       setLoading(false)
     }
   }
-  // 👆 END OF FIXED FUNCTION 👆
 
   return (
-    <main className="incident-page">
-      <a className="incident-back" href="/">
-        ← ShockReady home
-      </a>
-
-      <section className="incident-card">
-        <p className="incident-kicker">COMMUNITY RESILIENCE</p>
-        <h1>Report an incident</h1>
-        <p className="incident-intro">
-          Help your community respond to climate hazards and
-          essential-service disruptions.
-        </p>
-
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="incident-title">Incident title</label>
-          <input
-            id="incident-title"
-            name="title"
-            value={form.title}
-            onChange={handleChange}
-            placeholder="e.g. Flooded road near the market"
-            required
-          />
-
-          <label htmlFor="incident-category">Incident category</label>
-          <select
-            id="incident-category"
-            name="category"
-            value={form.category}
-            onChange={handleChange}
-          >
-            <option>Flooding</option>
-            <option>Drought</option>
-            <option>Water supply disruption</option>
-            <option>Damaged road or infrastructure</option>
-            <option>Power outage</option>
-            <option>Food insecurity</option>
-            <option>Other</option>
-          </select>
-
-          <label htmlFor="incident-location">Location or landmark</label>
-          <input
-            id="incident-location"
-            name="location"
-            value={form.location}
-            onChange={handleChange}
-            placeholder="e.g. near the main market"
-            required
-          />
-
-          <label>Pin the incident location</label>
-          <p className="incident-note">
-            Tap the map where the incident happened, or use your
-            current location. Tap again to move the pin.
+    <main className="incident-report-page">
+      <button className="incident-back" type="button" onClick={onBack}>
+        ← Back to ShockReady
+      </button>
+      <section className="incident-report-container">
+        <header className="incident-report-header">
+          <h1>Report an Incident</h1>
+          <p>
+            Help your community respond to emergencies by reporting incidents
+            and disruptions to essential services.
           </p>
+        </header>
 
-          <button
-            className="incident-location-button"
-            type="button"
-            onClick={useCurrentLocation}
-            disabled={locating || loading}
-          >
-            {locating
-              ? 'Finding your location...'
-              : '◎ Use my current location'}
-          </button>
+        {message && (
+          <div className="success-message" role="status">
+            {message}
+          </div>
+        )}
 
-          <div className="incident-location-map">
-            <MapContainer
-              center={DEFAULT_CENTER}
-              zoom={6}
-              scrollWheelZoom
-              className="incident-map"
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
+        {error && (
+          <div className="error-message" role="alert">
+            {error}
+          </div>
+        )}
 
-              <MapClickHandler onSelect={selectLocation} />
-              <RecenterMap position={position} />
-
-              {position && (
-                <Marker
-                  position={[position.latitude, position.longitude]}
-                />
-              )}
-            </MapContainer>
+        <form onSubmit={handleSubmit} className="incident-report-form">
+          <div className="form-group">
+            <label htmlFor="incident-title">Report title</label>
+            <input
+              id="incident-title"
+              type="text"
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              placeholder="e.g. Flooding near the market"
+              maxLength={150}
+              required
+            />
           </div>
 
-          <p
-            className={
-              position
-                ? 'incident-location-status selected'
-                : 'incident-location-status'
-            }
-            role="status"
-          >
-            {position
-              ? `Location selected: ${position.latitude.toFixed(5)}, ${position.longitude.toFixed(5)}`
-              : 'No location selected yet.'}
-          </p>
+          <div className="form-group">
+            <label htmlFor="incident-category">Incident category</label>
+            <select
+              id="incident-category"
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              required
+            >
+              <option value="Flooding">Flooding</option>
+              <option value="Drought">Drought</option>
+              <option value="Water supply disruption">
+                Water supply disruption
+              </option>
+              <option value="Damaged road or infrastructure">
+                Damaged road or infrastructure
+              </option>
+              <option value="Power outage">Power outage</option>
+              <option value="Food insecurity">Food insecurity</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
 
-          <label htmlFor="incident-description">What happened?</label>
-          <textarea
-            id="incident-description"
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            placeholder="Describe the incident, its impact and help needed..."
-            rows={5}
-            required
-          />
+          <div className="form-group">
+            <label htmlFor="incident-province">Province</label>
+            <input
+              id="incident-province"
+              type="text"
+              name="province"
+              value={form.province}
+              onChange={handleChange}
+              placeholder="e.g. Copperbelt"
+              maxLength={100}
+              required
+            />
+          </div>
 
-          {error && (
-            <p className="auth-message auth-error" role="alert">
-              {error}
+          <div className="form-group">
+            <label htmlFor="incident-district">District</label>
+            <input
+              id="incident-district"
+              type="text"
+              name="district"
+              value={form.district}
+              onChange={handleChange}
+              placeholder="e.g. Kitwe"
+              maxLength={100}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="incident-location">
+              Community or nearby landmark
+            </label>
+            <input
+              id="incident-location"
+              type="text"
+              name="location"
+              value={form.location}
+              onChange={handleChange}
+              placeholder="e.g. Near the main market"
+              maxLength={300}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Incident location</label>
+            <p>
+              Click the map to mark the incident location, or use your current
+              location.
             </p>
-          )}
 
-          {message && (
-            <p className="auth-message auth-success" role="status">
-              {message}
-            </p>
-          )}
+            <div className="incident-location-map" aria-label="Select incident location on map">
+              <MapContainer
+                center={DEFAULT_MAP_CENTER}
+                zoom={6}
+                scrollWheelZoom
+                style={{ height: '100%', width: '100%' }}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <MapCenterUpdater position={selectedPosition} />
+                <LocationMarker position={selectedPosition} onSelect={setLocation} />
+              </MapContainer>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleLocation}
+              disabled={loading}
+            >
+              {loading ? 'Please wait...' : 'Use My Current Location'}
+            </button>
+
+            {hasCoordinates && (
+              <div className="location-coordinates">
+                <p>
+                  <strong>Latitude:</strong> {form.latitude}
+                </p>
+                <p>
+                  <strong>Longitude:</strong> {form.longitude}
+                </p>
+              </div>
+            )}
+
+            {!hasCoordinates && (
+              <p className="location-hint">
+              Click the map or use the location button to select a point.
+              </p>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="incident-description">
+              Describe the incident
+            </label>
+            <textarea
+              id="incident-description"
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              placeholder="Explain what happened, who or what is affected, and any immediate risks."
+              rows={5}
+              maxLength={2000}
+              required
+            />
+          </div>
 
           <button
-            className="incident-submit"
             type="submit"
-            disabled={loading || locating}
+            className="submit-incident-button"
+            disabled={loading}
           >
-            {loading ? 'Submitting report...' : 'Submit incident report →'}
+            {loading ? 'Submitting Report...' : 'Submit Incident Report'}
           </button>
-
-          <p className="incident-note">
-            Your report is submitted only when the database confirms success.
-          </p>
         </form>
       </section>
     </main>

@@ -48,7 +48,7 @@ function EmergencyDashboard({ onBack }) {
 
       <section className="emergency-demo-notice">
         <strong>DEMO MODE</strong>
-        <span>All incidents and resource figures on this page are sample data. Updates are temporary and are not saved to Supabase.</span>
+        <span>All incidents and resource figures on this page are sample data. Updates are temporary and are not saved to the API.</span>
       </section>
 
       <section className="emergency-stats" aria-label="Response overview">

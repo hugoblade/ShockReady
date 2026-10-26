@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { supabase } from './supabase'
+import { api } from './api.js'
 import './Auth.css'
 
-export default function Auth({ onBack }) {
+export default function Auth({ onBack, onAuthenticated }) {
   const [mode, setMode] = useState('login')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -24,20 +24,15 @@ export default function Auth({ onBack }) {
           throw new Error('Please provide consent before creating your account.')
         }
 
-        const { data, error } = await supabase.auth.signUp({
+        const { data } = await api.signUp({
           email: email.trim(),
           password,
-          options: {
-            data: {
-              full_name: fullName.trim(),
-              consent_given: 'true',
-            },
-          },
+          fullName: fullName.trim(),
+          consent: true,
         })
 
-        if (error) throw error
-
         if (data.session) {
+          await onAuthenticated?.()
           setMessage('Account created successfully. You can now continue to ShockReady.')
         } else {
           setMessage(
@@ -45,13 +40,12 @@ export default function Auth({ onBack }) {
           )
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        await api.signIn({
           email: email.trim(),
           password,
         })
 
-        if (error) throw error
-
+        await onAuthenticated?.()
         setMessage('Signed in successfully. Your authentication session is active.')
       }
     } catch (err) {
@@ -113,12 +107,18 @@ export default function Auth({ onBack }) {
                   value={fullName}
                   onChange={(event) => setFullName(event.target.value)}
                   placeholder="Enter your full name"
+                  maxLength={120}
                   required
                 />
               </label>
 
               <label className="consent-label">
-                <input type="checkbox" required />
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(event) => setConsent(event.target.checked)}
+                  required
+                />
                 <span>
                   I consent to ShockReady collecting and using the information I submit to support incident reporting and community climate response.
                 </span>
@@ -160,7 +160,7 @@ export default function Auth({ onBack }) {
         </form>
 
         <p className="auth-footnote">
-          Your account access is managed securely through Supabase.
+          Your account access is managed securely by the ShockReady API.
         </p>
       </section>
     </main>
