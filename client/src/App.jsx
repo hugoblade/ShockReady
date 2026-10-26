@@ -45,21 +45,51 @@ function App() {
   // THEME STATE
   const [theme, setTheme] = useState('light')
 
+  // 🔒 USER ROLE STATE (Mocked for now)
+  // Default is 'Resident'. When Elijah finishes Supabase Auth, this will be real.
+  const [userRole, setUserRole] = useState('Resident')
+
+  // 🔒 HELPER: Check if user has staff access
+  const isStaff = ['Coordinator', 'OrgAdmin', 'Responder', 'Finance', 'Auditor', 'SysAdmin'].includes(userRole)
+
   // APPLY THEME
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
 
+  // 🔒 SECURITY GUARD: Kick Residents out of staff pages
+  useEffect(() => {
+    if (!isStaff) {
+      setShowDashboard(false)
+      setShowResourceTracking(false)
+      setShowCommunityCorps(false)
+      setShowEmergencyDashboard(false)
+    }
+  }, [isStaff])
+
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light')
   }
 
-  // ROUTING LOGIC
-  if (showDashboard) return <IncidentDashboard onBack={() => setShowDashboard(false)} />
+  // ==========================================
+  // ROUTING LOGIC (Role-Based Dashboards)
+  // ==========================================
+  // When Elijah connects Supabase, we will replace this with a real switch statement
+  // based on the user's role from the database.
+  if (showDashboard) {
+    // For now, we route everyone to IncidentDashboard. 
+    // Later, you can create <SysAdminDashboard />, <OrgDashboard />, etc.
+    return <IncidentDashboard onBack={() => setShowDashboard(false)} />
+  }
+
   if (showResourceTracking) return <ResourceTracking onBack={() => setShowResourceTracking(false)} />
   if (showCommunityCorps) return <CommunityCorps onBack={() => setShowCommunityCorps(false)} />
   if (showEmergencyDashboard) return <EmergencyDashboard onBack={() => setShowEmergencyDashboard(false)} />
+
+  // RESIDENT FLOW: Anonymous Reporting
   if (showIncidentReport) return <IncidentReport onBack={() => setShowIncidentReport(false)} />
+
+  // STAFF FLOW: Login
   if (showAuth) return <Auth onBack={() => setShowAuth(false)} />
 
   return (
@@ -98,32 +128,26 @@ function App() {
             {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
           </button>
 
-          {/* NEW PAGE ROUTES */}
-          <button className="sign-in" type="button" onClick={() => setShowDashboard(true)}>Dashboard</button>
-          <button className="sign-in" type="button" onClick={() => setShowResourceTracking(true)}>Resources</button>
-          <button className="sign-in" type="button" onClick={() => setShowCommunityCorps(true)}>Corps</button>
-          <button className="sign-in" type="button" onClick={() => setShowEmergencyDashboard(true)}>Emergency</button>
+          {/* 🔒 STAFF ONLY ROUTES (Visible only after login) */}
+          {isStaff && (
+            <>
+              <button className="sign-in" type="button" onClick={() => setShowDashboard(true)}>Dashboard</button>
+              <button className="sign-in" type="button" onClick={() => setShowResourceTracking(true)}>Resources</button>
+              <button className="sign-in" type="button" onClick={() => setShowCommunityCorps(true)}>Corps</button>
+              <button className="sign-in" type="button" onClick={() => setShowEmergencyDashboard(true)}>Emergency</button>
+            </>
+          )}
 
-          <a
-            className="sign-in"
-            href="#sign-in"
-            onClick={(event) => {
-              event.preventDefault()
-              setShowAuth(true)
-            }}
-          >
-            Sign in
-          </a>
-
+          {/* STAFF PORTAL LOGIN (Visible to everyone, but only staff have accounts) */}
           <a
             className="button button-small"
-            href="#get-started"
+            href="#staff-portal"
             onClick={(event) => {
               event.preventDefault()
               setShowAuth(true)
             }}
           >
-            Get started <span aria-hidden="true">↗</span>
+            Staff Portal <span aria-hidden="true">↗</span>
           </a>
         </div>
       </header>
@@ -153,19 +177,17 @@ function App() {
           </p>
 
           <div className="hero-actions">
-            <a
-              className="button"
-              href="#get-started"
-              onClick={(event) => {
-                event.preventDefault()
-                setShowAuth(true)
-              }}
-            >
-              Get Started
-            </a>
-
+            {/* 👇 CHANGED: Residents go straight to reporting, no login needed 👇 */}
             <button
               className="button"
+              type="button"
+              onClick={() => setShowIncidentReport(true)}
+            >
+              Report an Issue
+            </button>
+
+            <button
+              className="button button-light" // Make this stand out
               type="button"
               onClick={() => setShowIncidentReport(true)}
             >
@@ -183,7 +205,7 @@ function App() {
           </div>
         </div>
 
-        {/* 👇 THIS IS THE NEW IMAGE SECTION 👇 */}
+        {/* NEW IMAGE SECTION */}
         <div className="hero-visual">
           <img
             src="/hero-image.jpg"
