@@ -73,7 +73,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   padding: 65px 7% 70px;
   display: grid;
   grid-template-columns: 1fr 0.94fr;
-  align-items: center;
+  align-items: start; /* <--- CHANGE THIS FROM 'center' TO 'start' */
   gap: 5%;
 }
 

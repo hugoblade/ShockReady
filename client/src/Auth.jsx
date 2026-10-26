@@ -117,17 +117,10 @@ export default function Auth({ onBack }) {
                 />
               </label>
 
-              <label className="auth-consent">
-                <input
-                  type="checkbox"
-                  checked={consent}
-                  onChange={(event) => setConsent(event.target.checked)}
-                  required
-                />
+              <label className="consent-label">
+                <input type="checkbox" required />
                 <span>
-                  I consent to ShockReady collecting and using the information
-                  I submit to support incident reporting and community climate
-                  response.
+                  I consent to ShockReady collecting and using the information I submit to support incident reporting and community climate response.
                 </span>
               </label>
             </>

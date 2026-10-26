@@ -58,9 +58,9 @@ export default function IncidentReport() {
 
   const position = hasCoordinates
     ? {
-        latitude: Number(form.latitude),
-        longitude: Number(form.longitude),
-      }
+      latitude: Number(form.latitude),
+      longitude: Number(form.longitude),
+    }
     : null
 
   function handleChange(event) {
@@ -118,6 +118,7 @@ export default function IncidentReport() {
     )
   }
 
+  // 👇 THIS IS THE FIXED FUNCTION 👇
   async function handleSubmit(event) {
     event.preventDefault()
     setLoading(true)
@@ -125,17 +126,6 @@ export default function IncidentReport() {
     setError('')
 
     try {
-      const { data: authData, error: authError } =
-        await supabase.auth.getUser()
-
-      if (authError) throw authError
-
-      const user = authData.user
-
-      if (!user) {
-        throw new Error('Please sign in before submitting an incident report.')
-      }
-
       const latitude = Number(form.latitude)
       const longitude = Number(form.longitude)
 
@@ -151,19 +141,20 @@ export default function IncidentReport() {
         throw new Error('Please select the incident location on the map or use your current location.')
       }
 
+      // 🚨 ANONYMOUS INSERT (No login required)
       const { error: insertError } = await supabase
         .from('incidents')
         .insert({
-          reporter_id: user.id,
           title: form.title.trim(),
           description: form.description.trim(),
           category: form.category,
           location: `SRID=4326;POINT(${longitude} ${latitude})`,
+          status: 'Reported' // Added default status
         })
 
       if (insertError) throw insertError
 
-      setMessage('Incident report submitted successfully.')
+      setMessage('Incident report submitted successfully. Help is on the way.')
       setForm({
         title: '',
         description: '',
@@ -175,12 +166,13 @@ export default function IncidentReport() {
     } catch (err) {
       setError(
         err.message ||
-          'We could not submit your report. Please try again.'
+        'We could not submit your report. Please try again.'
       )
     } finally {
       setLoading(false)
     }
   }
+  // 👆 END OF FIXED FUNCTION 👆
 
   return (
     <main className="incident-page">
