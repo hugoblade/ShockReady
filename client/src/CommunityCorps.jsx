@@ -35,7 +35,8 @@ const skillOptions = [
   'Data Collection',
 ];
 
-function CommunityCorps() {
+// 👇 1. ADDED onBack HERE 👇
+function CommunityCorps({ onBack }) {
   const [volunteers, setVolunteers] = useState(initialVolunteers);
   const [search, setSearch] = useState('');
   const [availabilityFilter, setAvailabilityFilter] = useState('All');
@@ -132,6 +133,23 @@ function CommunityCorps() {
 
   return (
     <main className="corps-page">
+      {/* 👇 2. ADDED THE BACK BUTTON HERE 👇 */}
+      <button
+        onClick={onBack}
+        style={{
+          marginBottom: '20px',
+          background: 'transparent',
+          border: '1px solid var(--border-color)',
+          color: 'var(--text-main)',
+          padding: '8px 16px',
+          borderRadius: '8px',
+          cursor: 'pointer',
+          fontWeight: 'bold'
+        }}
+      >
+        ← Back to Home
+      </button>
+
       <header className="corps-header">
         <div>
           <p className="corps-eyebrow">SHOCKREADY • COMMUNITY RESPONSE</p>

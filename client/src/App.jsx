@@ -65,7 +65,7 @@ function App() {
   return (
     <main className="site-shell">
       <header className="navbar">
-        {/* 👇 TOP NAVBAR LOGO GOES HERE 👇 */}
+        {/* TOP NAVBAR LOGO */}
         <a className="brand" href="#home" aria-label="ShockReady home">
           <img
             src={theme === 'light' ? '/logo-light.png' : '/logo-dark.png'}
@@ -183,17 +183,13 @@ function App() {
           </div>
         </div>
 
-        <div className="hero-visual" role="img" aria-label="Illustration of a green landscape with hills, trees and a rising sun">
-          <div className="visual-sun" />
-          <div className="visual-cloud cloud-one" />
-          <div className="visual-cloud cloud-two" />
-          <div className="hill hill-back" />
-          <div className="hill hill-middle" />
-          <div className="hill hill-front" />
-
-          <div className="tree tree-one"><span /></div>
-          <div className="tree tree-two"><span /></div>
-          <div className="tree tree-three"><span /></div>
+        {/* 👇 THIS IS THE NEW IMAGE SECTION 👇 */}
+        <div className="hero-visual">
+          <img
+            src="/hero-image.jpg"
+            alt="Rain falling on green leaves"
+            className="hero-image"
+          />
 
           <div className="visual-caption">
             <span className="caption-symbol">↗</span>
@@ -282,7 +278,7 @@ function App() {
       </section>
 
       <footer className="footer">
-        {/* 👇 FOOTER LOGO GOES HERE 👇 */}
+        {/* FOOTER LOGO */}
         <a className="brand footer-brand" href="#home">
           <img
             src={theme === 'light' ? '/logo-light.png' : '/logo-dark.png'}
