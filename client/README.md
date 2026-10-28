@@ -21,6 +21,13 @@ service, set the root directory to `client`, the build command to
 `npm install && npm run build`, and the start command to `npm start`. The start
 script serves the built frontend on Render's `PORT`.
 
+For Vercel, import the repository with the repository root as the project root.
+The root `vercel.json` installs the locked frontend dependencies from `client`,
+builds the Vite app, publishes `client/dist`, and routes page requests to the
+single-page app entry point. Set `VITE_API_URL` in the Vercel project to the
+deployed API base URL ending in `/api`; the default `/api` is suitable only when
+the API is served from the same origin.
+
 Deploy the Express API separately from the `server` directory with
 `npm start`. The API does not serve the frontend build.
 If the frontend and API are hosted on different origins, set the frontend build
